@@ -42,9 +42,51 @@ public class Chatbot{
             System.out.println(String.format("%.7f",count/(double)corpus.size()));
         }
         else if(flag == 200){
+          double probabilitySegment[] = new double[corpus.size()];// = new ArrayList<>();
+          // System.out.println(Collections.max(corpus));
+          for(int i = 0; i<=Collections.max(corpus);i++){
+            if(i==0){
+              probabilitySegment[0] = 0;
+            }
+            else{
+              probabilitySegment[i] = probabilitySegment[i-1];
+            }
+            for(int j = 0; j<corpus.size();j++){
+              if(corpus.get(j).equals(i)){
+                probabilitySegment[i] += 1/(double)corpus.size();
+              }
+            }
+          }
+          double total=0;
+          for(int i =0; i<corpus.size();i++){
+            total += probabilitySegment[i];
+          }
+          System.out.println(total);
             int n1 = Integer.valueOf(args[1]);
             int n2 = Integer.valueOf(args[2]);
             //TODO generate
+            double random = (double)(n1 / n2);
+            double l =0;
+            double r =0;
+            int i =0;
+            for(int k =0; k<i;k++){
+              l += probabilitySegment[k];
+            }
+            for(int k = 0; k<i+1;k++){
+              r += probabilitySegment[k];
+            }
+            for(int j = 0; j<corpus.size()-1;j++){
+              if(probabilitySegment[j]<= random && random <= probabilitySegment[j+1]){
+                 i = j;
+              }
+            }
+            System.out.println(i);
+            System.out.println(String.format("%.7f",l));
+            System.out.println(String.format("%.7f",r));
+            // System.out.println(i);
+            // System.out.println(String.format("%.7f",l));
+            // System.out.println(String.format("%.7f",r));
+
 
         }
         else if(flag == 300){
