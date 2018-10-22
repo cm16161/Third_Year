@@ -45,8 +45,8 @@ public class Chatbot{
             int n1 = Integer.valueOf(args[1]);
             int n2 = Integer.valueOf(args[2]);
             //TODO generate
+
             double random = (double) n1/n2;
-            // System.out.println(random);
             double l = 0;
             double r = 0;
             double cumulative;
@@ -77,11 +77,6 @@ public class Chatbot{
                 System.out.println(String.format("%.7f",probabilitySegment[i+1]));
               }
             }
-            // for(double i = 0; i<random; i++){
-              // l += probabilitySegment[i];
-            // }
-            // System.out.println(probabilitySegment[4699]);
-            // System.out.println(probabilitySegment[4699-1]);
         }
         else if(flag == 300){
             int h = Integer.valueOf(args[1]);
@@ -89,6 +84,14 @@ public class Chatbot{
             int count = 0;
             ArrayList<Integer> words_after_h = new ArrayList<Integer>();
             //TODO
+            for(int i =0; i<corpus.size()-1;i++){
+              if(corpus.get(i) == h){
+                if(corpus.get(i+1) == w){
+                  count++;
+                }
+                words_after_h.add(corpus.get(i+1));
+              }
+            }
 
             //output
             System.out.println(count);
