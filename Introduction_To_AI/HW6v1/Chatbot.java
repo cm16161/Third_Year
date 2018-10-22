@@ -42,52 +42,46 @@ public class Chatbot{
             System.out.println(String.format("%.7f",count/(double)corpus.size()));
         }
         else if(flag == 200){
-          double probabilitySegment[] = new double[corpus.size()];// = new ArrayList<>();
-          // System.out.println(Collections.max(corpus));
-          for(int i = 0; i<=Collections.max(corpus);i++){
-            if(i==0){
-              probabilitySegment[0] = 0;
-            }
-            else{
-              probabilitySegment[i] = probabilitySegment[i-1];
-            }
-            for(int j = 0; j<corpus.size();j++){
-              if(corpus.get(j).equals(i)){
-                probabilitySegment[i] += 1/(double)corpus.size();
-              }
-            }
-          }
-          double total=0;
-          for(int i =0; i<corpus.size();i++){
-            total += probabilitySegment[i];
-          }
-          System.out.println(total);
             int n1 = Integer.valueOf(args[1]);
             int n2 = Integer.valueOf(args[2]);
             //TODO generate
-            double random = (double)(n1 / n2);
-            double l =0;
-            double r =0;
-            int i =0;
-            for(int k =0; k<i;k++){
-              l += probabilitySegment[k];
-            }
-            for(int k = 0; k<i+1;k++){
-              r += probabilitySegment[k];
-            }
-            for(int j = 0; j<corpus.size()-1;j++){
-              if(probabilitySegment[j]<= random && random <= probabilitySegment[j+1]){
-                 i = j;
+            double random = (double) n1/n2;
+            // System.out.println(random);
+            double l = 0;
+            double r = 0;
+            double cumulative;
+            double total =0;
+            int wordCounts[] = new int[Collections.max(corpus)];
+            for(int i = 0; i< wordCounts.length;i++){
+              for (int j = 0; j<corpus.size();j++){
+                if (corpus.get(j).equals(i)) {
+                  wordCounts[i]++;
+                }
               }
             }
-            System.out.println(i);
-            System.out.println(String.format("%.7f",l));
-            System.out.println(String.format("%.7f",r));
-            // System.out.println(i);
-            // System.out.println(String.format("%.7f",l));
-            // System.out.println(String.format("%.7f",r));
-
-
+            double probabilitySegment[] = new double[Collections.max(corpus)+2];
+            for(int i =0; i<probabilitySegment.length-1;i++){
+              if(i != 0){
+                probabilitySegment[i] = probabilitySegment[i-1];
+                probabilitySegment[i] += (double) ((double) wordCounts[i-1] / (double) corpus.size());
+              }
+              if(i == 0){
+                probabilitySegment[0] = 0;
+              }
+            }
+            probabilitySegment[Collections.max(corpus)+1] = 1;
+            for(int i = 0; i<probabilitySegment.length-1; i++){
+              if((probabilitySegment[i] <= random) && (random <= probabilitySegment[i+1])){
+                System.out.println(i);
+                System.out.println(String.format("%.7f",probabilitySegment[i]));
+                System.out.println(String.format("%.7f",probabilitySegment[i+1]));
+              }
+            }
+            // for(double i = 0; i<random; i++){
+              // l += probabilitySegment[i];
+            // }
+            // System.out.println(probabilitySegment[4699]);
+            // System.out.println(probabilitySegment[4699-1]);
         }
         else if(flag == 300){
             int h = Integer.valueOf(args[1]);
