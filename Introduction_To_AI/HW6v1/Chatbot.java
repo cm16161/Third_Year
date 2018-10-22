@@ -49,8 +49,6 @@ public class Chatbot{
             double random = (double) n1/n2;
             double l = 0;
             double r = 0;
-            double cumulative;
-            double total =0;
             int wordCounts[] = new int[Collections.max(corpus)];
             for(int i = 0; i< wordCounts.length;i++){
               for (int j = 0; j<corpus.size();j++){
@@ -103,6 +101,47 @@ public class Chatbot{
             int n2 = Integer.valueOf(args[2]);
             int h = Integer.valueOf(args[3]);
             //TODO
+
+            double random = (double) n1/n2;
+            double l = 0;
+            double r = 0;
+
+            int bigramCounts[] = new int[Collections.max(corpus)];
+            for(int i=0;i<bigramCounts.length;i++){
+              for(int j =0; j<corpus.size();j++){
+                if(corpus.get(j).equals(h)){
+                  if(corpus.get(j+1).equals(i)){
+                    bigramCounts[i]++;
+                  }
+                }
+              }
+
+            }
+            int totalBigrams =0;
+            for(int i = 0;i<bigramCounts.length;i++){
+              if(bigramCounts[i] != 0){
+                totalBigrams+= bigramCounts[i];
+              }
+            }
+
+            double probabilitySegment[] = new double[bigramCounts.length+2];
+            for(int i =0; i<probabilitySegment.length-1;i++){
+              if(i != 0){
+                probabilitySegment[i] = probabilitySegment[i-1];
+                probabilitySegment[i] += (double) ((double) bigramCounts[i-1] / (double) totalBigrams);
+              }
+              if(i == 0){
+                probabilitySegment[0] = 0;
+              }
+            }
+            probabilitySegment[bigramCounts.length+1] = 1;
+            for(int i = 0; i<probabilitySegment.length-1; i++){
+              if((probabilitySegment[i] <= random) && (random <= probabilitySegment[i+1])){
+                System.out.println(i);
+                System.out.println(String.format("%.7f",probabilitySegment[i]));
+                System.out.println(String.format("%.7f",probabilitySegment[i+1]));
+              }
+            }
 
         }
         else if(flag == 500){
