@@ -178,6 +178,54 @@ public class Chatbot{
             int h1 = Integer.valueOf(args[3]);
             int h2 = Integer.valueOf(args[4]);
             //TODO
+
+
+            double random = (double) n1/n2;
+            double l = 0;
+            double r = 0;
+
+            int trigramCounts[] = new int[Collections.max(corpus)];
+            for(int i=0;i<trigramCounts.length;i++){
+              for(int j =0; j<corpus.size();j++){
+                if(corpus.get(j).equals(h1)){
+                  if(corpus.get(j+1).equals(h2)){
+                    if(corpus.get(j+2).equals(i)){
+                      trigramCounts[i]++;
+                    }
+                  }
+                }
+              }
+
+            }
+            int totalTrigrams =0;
+            for(int i = 0;i<trigramCounts.length;i++){
+              if(trigramCounts[i] != 0){
+                totalTrigrams+= trigramCounts[i];
+              }
+            }
+
+            double probabilitySegment[] = new double[trigramCounts.length+2];
+            for(int i =0; i<probabilitySegment.length-1;i++){
+              if(i != 0){
+                probabilitySegment[i] = probabilitySegment[i-1];
+                probabilitySegment[i] += (double) ((double) trigramCounts[i-1] / (double) totalTrigrams);
+              }
+              if(i == 0){
+                probabilitySegment[0] = 0;// ((double)trigramCounts[0]/ (double) totalTrigrams);
+              }
+            }
+            probabilitySegment[trigramCounts.length+1] = 1;
+            boolean cond = false;
+            for(int i = 0; i<probabilitySegment.length-1; i++){
+              if((probabilitySegment[i] <= (double)random) && (random <= probabilitySegment[i+1]) && (probabilitySegment[i+1] !=0)){
+                System.out.println(i);
+                System.out.println(String.format("%.7f",probabilitySegment[i]));
+                System.out.println(String.format("%.7f",probabilitySegment[i+1]));
+                cond = true;
+                break;
+              }
+            }
+            if(!cond){System.out.println("undefined");}
         }
         else if(flag == 700){
             int seed = Integer.valueOf(args[1]);
