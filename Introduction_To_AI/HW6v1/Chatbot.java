@@ -152,6 +152,18 @@ public class Chatbot{
             ArrayList<Integer> words_after_h1h2 = new ArrayList<Integer>();
             //TODO
 
+            for(int i =0; i<corpus.size()-1;i++){
+              if(corpus.get(i) == h1){
+                if(corpus.get(i+1) == h2){
+                  if(corpus.get(i+2) == w){
+                    count++;
+                  }
+                  words_after_h1h2.add(corpus.get(i+2));
+                }
+              }
+            }
+
+
             //output
             System.out.println(count);
             System.out.println(words_after_h1h2.size());
