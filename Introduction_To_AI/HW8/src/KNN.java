@@ -62,11 +62,8 @@ public class KNN {
 			int machineCount = 0;
 			int nationCount =0;
 			int innerCount = 0;
-			// System.out.println(i.name);
-			// System.out.println();
 			for(int t : indices){
 				knn.nearestNeighbors[count][innerCount] = trainingData[t].name;
-				// System.out.println(knn.nearestNeighbors[count][innerCount]);
 				if(trainingData[t].category.equals("fruit")){
 					fruitCount++;
 				}
@@ -78,7 +75,6 @@ public class KNN {
 				}
 				innerCount++;
 			}
-			// System.out.println();
 			if((nationCount >= machineCount) && (nationCount >= fruitCount)){
 				knn.categoryAssignment[count] = "nation";
 			}
