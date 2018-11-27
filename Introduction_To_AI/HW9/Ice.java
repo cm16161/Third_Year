@@ -39,21 +39,13 @@ public static double calculateMSEB1DoubleX(int[] y, double[] x, double beta0, do
 
 public static double calculateMSEB0DoubleXNewEq(int[] y, double[] x, double beta0, double beta1, int r){
   double mseB0 =0;
-  // for (int i = 0;i<y.length;i++){
-    // mseB0 += beta0 + (beta1*x[i]) - y[i];
-  // }
   mseB0 = 2*(beta0 + (beta1*x[r]) - y[r]);
-  // mseB0 = 2*mseB0 / (double)y.length;
   return mseB0;
 }
 
 public static double calculateMSEB1DoubleXNewEq(int[] y, double[] x, double beta0, double beta1, int r){
   double mseB1 = 0;
-  // for (int i = 0;i<y.length;i++){
-  //   mseB1 += (beta0 + (beta1*x[i]) - y[i])*x[i];
-  // }
   mseB1 = 2*(beta0 + (beta1*x[r]) - y[r])*x[r];
-  // mseB1 = 2*mseB1 / (double)y.length;
   return mseB1;
 }
 
@@ -77,24 +69,18 @@ public static double calculateMSEDoubleX(int[] y, double[] x, double beta0, doub
 
 public static double calculateXMean(int[] x){
   double xMean = 0;
-  // double yMean = 0;
   for(int i =0; i< x.length; i++){
     xMean += x[i];
-    // yMean += y[i];
   }
   xMean = xMean / (double)x.length;
-  // yMean = yMean / (double)y.length;
   return xMean;
 }
 
 public static double calculateYMean(int[] y){
-  // double xMean = 0;
   double yMean = 0;
   for(int i =0; i< y.length; i++){
-    // xMean += x[i];
     yMean += y[i];
   }
-  // xMean = xMean / (double)x.length;
   yMean = yMean / (double)y.length;
   return yMean;
 }
@@ -103,7 +89,6 @@ public static double calculateBeta1Hat(int[] y, int[] x, double xMean, double yM
   double beta1Hat = 0;
   double sumXcenterSquared = 0;
   double sumXcenterYcenter = 0;
-  // double sumYcenter = 0;
   for(int i = 0; i<x.length; i++){
     sumXcenterYcenter += (x[i] - xMean)*(y[i] - yMean);
     sumXcenterSquared += Math.pow((x[i]-xMean),2);
@@ -160,10 +145,6 @@ public static void main(String[] args) {
     double beta0 = Float.parseFloat(args[1]);
     double beta1 = Float.parseFloat(args[2]);
     double mse = calculateMSE(y,x,beta0,beta1);
-    // for(int i = 0; i <y.length; i++){
-      // mse += Math.pow((beta0 + beta1*x[i] - y[i]),2);
-    // }
-    // mse = mse / (double) y.length;
     System.out.printf("%.2f\n",mse);
   }
 else if (flag == 400){
@@ -171,10 +152,6 @@ else if (flag == 400){
     double beta1 = Float.parseFloat(args[2]);
     double mseB0 = calculateMSEB0(y,x,beta0,beta1);
     double mseB1 = calculateMSEB1(y,x,beta0,beta1);;
-    // for (int i = 0;i<y.length;i++){
-      // mseB0 += beta0 + (beta1*x[i]) - y[i];
-      // mseB1 += (beta0 + (beta1*x[i]) - y[i])*x[i];
-    // }
     System.out.printf("%.2f\n",mseB0);
     System.out.printf("%.2f\n",mseB1);
 }
@@ -198,23 +175,8 @@ else if (flag == 500){
 else if (flag == 600){
   double xMean = calculateXMean(x);
   double yMean = calculateYMean(y);
-  // for(int i =0; i< x.length; i++){
-    // xMean += x[i];
-    // yMean += y[i];
-  // }
-  // xMean = xMean / (double)x.length;
-  // yMean = yMean / (double)y.length;
   double beta1Hat = calculateBeta1Hat(y,x,xMean, yMean);
-  // double sumXcenterSquared = 0;
-  // double sumXcenterYcenter = 0;
-  // double sumYcenter = 0;
-  // for(int i = 0; i<x.length; i++){
-    // sumXcenterYcenter += (x[i] - xMean)*(y[i] - yMean);
-    // sumXcenterSquared += Math.pow((x[i]-xMean),2);
-  // }
-  // beta1Hat = sumXcenterYcenter / sumXcenterSquared;
   double beta0Hat = calculateBeta0Hat(yMean,beta1Hat,xMean);
-  // beta0Hat = yMean - beta1Hat*xMean;
   System.out.printf("%.2f %.2f %.2f\n",beta0Hat, beta1Hat, calculateMSE(y,x, beta0Hat,beta1Hat));
 }
 
@@ -246,7 +208,6 @@ else if (flag == 800){
   double nMinus1 = x.length-1;
   xStd = xStd * (1/nMinus1);
   xStd = Math.sqrt(xStd);
-  // System.out.println(xStd);
   for(int i = 0; i<x.length; i++){
     newX[i] = ((x[i] - xMean)/xStd);
   }
@@ -276,7 +237,6 @@ else if (flag == 900){
   double nMinus1 = x.length-1;
   xStd = xStd * (1/nMinus1);
   xStd = Math.sqrt(xStd);
-  // System.out.println(xStd);
   for(int i = 0; i<x.length; i++){
     newX[i] = ((x[i] - xMean)/xStd);
   }
