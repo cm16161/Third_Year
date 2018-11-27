@@ -19,7 +19,54 @@ public static double calculateMSEB1(int[] y, int[] x, double beta0, double beta1
   return mseB1;
 }
 
+public static double calculateMSEB0DoubleX(int[] y, double[] x, double beta0, double beta1){
+  double mseB0 =0;
+  for (int i = 0;i<y.length;i++){
+    mseB0 += beta0 + (beta1*x[i]) - y[i];
+  }
+  mseB0 = 2*mseB0 / (double)y.length;
+  return mseB0;
+}
+
+public static double calculateMSEB1DoubleX(int[] y, double[] x, double beta0, double beta1){
+  double mseB1 = 0;
+  for (int i = 0;i<y.length;i++){
+    mseB1 += (beta0 + (beta1*x[i]) - y[i])*x[i];
+  }
+  mseB1 = 2*mseB1 / (double)y.length;
+  return mseB1;
+}
+
+public static double calculateMSEB0DoubleXNewEq(int[] y, double[] x, double beta0, double beta1, int r){
+  double mseB0 =0;
+  // for (int i = 0;i<y.length;i++){
+    // mseB0 += beta0 + (beta1*x[i]) - y[i];
+  // }
+  mseB0 = 2*(beta0 + (beta1*x[r]) - y[r]);
+  // mseB0 = 2*mseB0 / (double)y.length;
+  return mseB0;
+}
+
+public static double calculateMSEB1DoubleXNewEq(int[] y, double[] x, double beta0, double beta1, int r){
+  double mseB1 = 0;
+  // for (int i = 0;i<y.length;i++){
+  //   mseB1 += (beta0 + (beta1*x[i]) - y[i])*x[i];
+  // }
+  mseB1 = 2*(beta0 + (beta1*x[r]) - y[r])*x[r];
+  // mseB1 = 2*mseB1 / (double)y.length;
+  return mseB1;
+}
+
 public static double calculateMSE(int[] y, int[] x, double beta0, double beta1){
+  double mse = 0;
+  for(int i = 0; i <y.length; i++){
+    mse += Math.pow((beta0 + beta1*x[i] - y[i]),2);
+  }
+  mse = mse / (double) y.length;
+  return mse;
+}
+
+public static double calculateMSEDoubleX(int[] y, double[] x, double beta0, double beta1){
   double mse = 0;
   for(int i = 0; i <y.length; i++){
     mse += Math.pow((beta0 + beta1*x[i] - y[i]),2);
@@ -180,6 +227,72 @@ else if (flag == 700){
 
   double prediction = beta0Hat + beta1Hat*inputYear;
   System.out.printf("%.2f\n",prediction);
+}
+
+else if (flag == 800){
+  double aeta = Float.parseFloat(args[1]);
+  int t = Integer.valueOf(args[2]);
+  double beta0 = 0;
+  double newbeta0 = 0;
+  double beta1 = 0;
+  double newbeta1 = 0;
+  double xMean = calculateXMean(x);
+  double xStd = 0;
+  double[] newX;
+  newX = new double[x.length];
+  for (int i =0; i<x.length; i++){
+    xStd += Math.pow((x[i] - xMean),2);
+  }
+  double nMinus1 = x.length-1;
+  xStd = xStd * (1/nMinus1);
+  xStd = Math.sqrt(xStd);
+  // System.out.println(xStd);
+  for(int i = 0; i<x.length; i++){
+    newX[i] = ((x[i] - xMean)/xStd);
+  }
+  for (int i =0; i<t; i++){
+    newbeta0 = beta0 - aeta*(calculateMSEB0DoubleX(y,newX,beta0,beta1));
+    newbeta1 = beta1 - aeta*(calculateMSEB1DoubleX(y,newX,beta0,beta1));
+    beta0 = newbeta0;
+    beta1 = newbeta1;
+    System.out.printf("%d %.2f %.2f %.2f \n",i+1,beta0,beta1,calculateMSEDoubleX(y,newX,beta0,beta1));
+  }
+}
+
+else if (flag == 900){
+  double aeta = Float.parseFloat(args[1]);
+  int t = Integer.valueOf(args[2]);
+  double beta0 = 0;
+  double newbeta0 = 0;
+  double beta1 = 0;
+  double newbeta1 = 0;
+  double xMean = calculateXMean(x);
+  double xStd = 0;
+  double[] newX;
+  newX = new double[x.length];
+  for (int i =0; i<x.length; i++){
+    xStd += Math.pow((x[i] - xMean),2);
+  }
+  double nMinus1 = x.length-1;
+  xStd = xStd * (1/nMinus1);
+  xStd = Math.sqrt(xStd);
+  // System.out.println(xStd);
+  for(int i = 0; i<x.length; i++){
+    newX[i] = ((x[i] - xMean)/xStd);
+  }
+
+
+  Random generator = new Random();
+
+
+  for (int i =0; i<t; i++){
+    int r = generator.nextInt(y.length);
+    newbeta0 = beta0 - aeta*(calculateMSEB0DoubleXNewEq(y,newX,beta0,beta1,r));
+    newbeta1 = beta1 - aeta*(calculateMSEB1DoubleXNewEq(y,newX,beta0,beta1,r));
+    beta0 = newbeta0;
+    beta1 = newbeta1;
+    System.out.printf("%d %.2f %.2f %.2f \n",i+1,beta0,beta1,calculateMSEDoubleX(y,newX,beta0,beta1));
+  }
 }
 
 }
