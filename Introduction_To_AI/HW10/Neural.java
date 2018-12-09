@@ -29,13 +29,10 @@ public class Neural{
       double w9 = Double.parseDouble(args[9]);
       double x1 = Double.parseDouble(args[10]);
       double x2 = Double.parseDouble(args[11]);
-      // double ua = 1*w1 + x1*w2 + x2*w3;
       double ua = calculateUA(w1, w2, w3, x1, x2);
       double va = Math.max(ua,0);
-      // double ub = 1*w4 + x1*w5 + x2*w6;
       double ub = calculateUB(w4,w5,w6,x1,x2);
       double vb = Math.max(ub,0);
-      // double uc = 1*w7 + va*w8 + vb*w9;
       double uc = calculateUC(w7,w8,w9,va,vb);
       double vc = 1/(1+Math.pow(Math.E,-uc));
       System.out.printf("%.5f %.5f %.5f %.5f %.5f %.5f\n",ua,va,ub,vb,uc,vc);
@@ -54,13 +51,10 @@ public class Neural{
       double x1 = Double.parseDouble(args[10]);
       double x2 = Double.parseDouble(args[11]);
       double y = Double.parseDouble(args[12]);
-      // double ua = 1*w1 + x1*w2 + x2*w3;
       double ua = calculateUA(w1, w2, w3, x1, x2);
       double va = Math.max(ua,0);
-      // double ub = 1*w4 + x1*w5 + x2*w6;
       double ub = calculateUB(w4,w5,w6,x1,x2);
       double vb = Math.max(ub,0);
-      // double uc = 1*w7 + va*w8 + vb*w9;
       double uc = calculateUC(w7,w8,w9,va,vb);
       double vc = 1/(1+Math.pow(Math.E,-uc));
       double E = 0.5*Math.pow((vc - y),2);
@@ -82,13 +76,10 @@ public class Neural{
       double x1 = Double.parseDouble(args[10]);
       double x2 = Double.parseDouble(args[11]);
       double y = Double.parseDouble(args[12]);
-      // double ua = 1*w1 + x1*w2 + x2*w3;
       double ua = calculateUA(w1, w2, w3, x1, x2);
       double va = Math.max(ua,0);
-      // double ub = 1*w4 + x1*w5 + x2*w6;
       double ub = calculateUB(w4,w5,w6,x1,x2);
       double vb = Math.max(ub,0);
-      // double uc = 1*w7 + va*w8 + vb*w9;
       double uc = calculateUC(w7,w8,w9,va,vb);
       double vc = 1/(1+Math.pow(Math.E,-uc));
       double E = 0.5*Math.pow((vc - y),2);
@@ -123,13 +114,10 @@ public class Neural{
       double x1 = Double.parseDouble(args[10]);
       double x2 = Double.parseDouble(args[11]);
       double y = Double.parseDouble(args[12]);
-      // double ua = 1*w1 + x1*w2 + x2*w3;
       double ua = calculateUA(w1, w2, w3, x1, x2);
       double va = Math.max(ua,0);
-      // double ub = 1*w4 + x1*w5 + x2*w6;
       double ub = calculateUB(w4,w5,w6,x1,x2);
       double vb = Math.max(ub,0);
-      // double uc = 1*w7 + va*w8 + vb*w9;
       double uc = calculateUC(w7,w8,w9,va,vb);
       double vc = 1/(1+Math.pow(Math.E,-uc));
       double E = 0.5*Math.pow((vc - y),2);
@@ -177,13 +165,10 @@ public class Neural{
       double y = Double.parseDouble(args[12]);
       double aeta = Double.parseDouble(args[13]);
 
-      // double ua = 1*w1 + x1*w2 + x2*w3;
       double ua = calculateUA(w1, w2, w3, x1, x2);
       double va = Math.max(ua,0);
-      // double ub = 1*w4 + x1*w5 + x2*w6;
       double ub = calculateUB(w4,w5,w6,x1,x2);
       double vb = Math.max(ub,0);
-      // double uc = 1*w7 + va*w8 + vb*w9;
       double uc = calculateUC(w7,w8,w9,va,vb);
       double vc = 1/(1+Math.pow(Math.E,-uc));
       double E = 0.5*Math.pow((vc - y),2);
@@ -224,10 +209,8 @@ public class Neural{
 
       double new_ua = calculateUA(new_w1, new_w2, new_w3, x1, x2);
       double new_va = Math.max(new_ua,0);
-      // double ub = 1*w4 + x1*w5 + x2*w6;
       double new_ub = calculateUB(new_w4,new_w5,new_w6,x1,x2);
       double new_vb = Math.max(new_ub,0);
-      // double uc = 1*w7 + va*w8 + vb*w9;
       double new_uc = calculateUC(new_w7,new_w8,new_w9,new_va,new_vb);
       double new_vc = 1/(1+Math.pow(Math.E,-new_uc));
       double new_E = 0.5*Math.pow((new_vc - y),2);
@@ -333,7 +316,35 @@ public class Neural{
       {1, 0.84, 1},
       {0.92, 0.67 ,0}
     };
-    // System.out.println(training.length);
+
+    double[][] test= {
+      {0.9 ,0.88, 1},
+      {0.8 ,0.4, 0},
+      {0.7 ,0.49, 0},
+      {0.97, 0.82, 1},
+      {0.57, 0.65, 0},
+      {0.62, 0.47, 0},
+      {0.9 ,0.85, 1},
+      {0.93, 0.57, 0},
+      {0.62, 0.79, 0},
+      {0.93, 0.95, 1},
+      {0.59, 0.36, 0},
+      {0.75, 0.31, 0},
+      {0.98, 0.95, 1},
+      {0.9 ,0.49, 0},
+      {0.81, 0.65, 0},
+      {1 ,0.82, 0},
+      {0.87, 0.36, 0},
+      {0.97, 0.6, 0},
+      {0.93, 0.7, 0},
+      {1 ,0.85, 1},
+      {0.86, 0.75, 0},
+      {0.92, 0.5, 0},
+      {0.95, 0.82, 1},
+      {0.9, 0.8, 0},
+      {0.89, 0.77, 0}
+
+    };
     if(flag==600){
       double w1 = Double.parseDouble(args[1]);
       double w2 = Double.parseDouble(args[2]);
@@ -344,12 +355,11 @@ public class Neural{
       double w7 = Double.parseDouble(args[7]);
       double w8 = Double.parseDouble(args[8]);
       double w9 = Double.parseDouble(args[9]);
-      double x1;//Double.parseDouble(args[10]);
-      double x2;  //Double.parseDouble(args[11]);
-      double y;  //Double.parseDouble(args[12]);
+      double x1;
+      double x2;
+      double y;
       double aeta = Double.parseDouble(args[10]);
 
-      // double ua = 1*w1 + x1*w2 + x2*w3;
       for(int i = 0; i<training.length;i++){
         x1 = training[i][0];
         x2 = training[i][1];
@@ -357,13 +367,10 @@ public class Neural{
         double E = 0;
         double ua = calculateUA(w1, w2, w3, x1, x2);
         double va = Math.max(ua,0);
-        // double ub = 1*w4 + x1*w5 + x2*w6;
         double ub = calculateUB(w4,w5,w6,x1,x2);
         double vb = Math.max(ub,0);
-        // double uc = 1*w7 + va*w8 + vb*w9;
         double uc = calculateUC(w7,w8,w9,va,vb);
         double vc = 1/(1+Math.pow(Math.E,-uc));
-        // double E = 0.5*Math.pow((vc - y),2);
         double dEdVc = vc - y;
         double dEdUc = dEdVc*vc*(1-vc);
 
@@ -413,24 +420,18 @@ public class Neural{
         for(int j = 0; j<eval.length;j++){
           double eval_ua = calculateUA(new_w1, new_w2, new_w3, eval[j][0], eval[j][1]);
           double eval_va = Math.max(eval_ua,0);
-          // double ub = 1*new_w4 + eval[j][0]*new_w5 + eval[j][1]*new_w6;
           double eval_ub = calculateUB(new_w4,new_w5,new_w6,eval[j][0],eval[j][1]);
           double eval_vb = Math.max(eval_ub,0);
-          // double uc = 1*new_w7 + va*new_w8 + vb*new_w9;
           double eval_uc = calculateUC(new_w7,new_w8,new_w9,eval_va,eval_vb);
           double eval_vc = 1/(1+Math.pow(Math.E,-eval_uc));
           E += 0.5*Math.pow((eval_vc - eval[j][2]),2);
         }
-        // E = E/25;
         double new_ua = calculateUA(new_w1, new_w2, new_w3, x1, x2);
         double new_va = Math.max(new_ua,0);
-        // double ub = 1*w4 + x1*w5 + x2*w6;
         double new_ub = calculateUB(new_w4,new_w5,new_w6,x1,x2);
         double new_vb = Math.max(new_ub,0);
-        // double uc = 1*w7 + va*w8 + vb*w9;
         double new_uc = calculateUC(new_w7,new_w8,new_w9,new_va,new_vb);
         double new_vc = 1/(1+Math.pow(Math.E,-new_uc));
-        // double new_E = 0.5*Math.pow((new_vc - y),2);
         System.out.printf("%.5f %.5f %.5f\n",x1,x2,y);
         System.out.printf("%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n",new_w1,new_w2,new_w3,new_w4,new_w5,new_w6,new_w7,new_w8,new_w9);
         System.out.printf("%.5f\n", E);
@@ -438,7 +439,7 @@ public class Neural{
       }
     }
 
-    if(flag == 700){
+    if(flag == 800){
       double w1 = Double.parseDouble(args[1]);
       double w2 = Double.parseDouble(args[2]);
       double w3 = Double.parseDouble(args[3]);
@@ -448,14 +449,14 @@ public class Neural{
       double w7 = Double.parseDouble(args[7]);
       double w8 = Double.parseDouble(args[8]);
       double w9 = Double.parseDouble(args[9]);
-      double x1;//Double.parseDouble(args[10]);
-      double x2;  //Double.parseDouble(args[11]);
-      double y;  //Double.parseDouble(args[12]);
+      double x1;
+      double x2;
+      double y;
       double aeta = Double.parseDouble(args[10]);
       int T = Integer.valueOf(args[11]);
       double E = 0;
+      double oldE = 1000000;
       for(int t = 0; t<T;t++){
-        // double ua = 1*w1 + x1*w2 + x2*w3;
         for(int i = 0; i<training.length;i++){
           x1 = training[i][0];
           x2 = training[i][1];
@@ -463,13 +464,10 @@ public class Neural{
           E = 0;
           double ua = calculateUA(w1, w2, w3, x1, x2);
           double va = Math.max(ua,0);
-          // double ub = 1*w4 + x1*w5 + x2*w6;
           double ub = calculateUB(w4,w5,w6,x1,x2);
           double vb = Math.max(ub,0);
-          // double uc = 1*w7 + va*w8 + vb*w9;
           double uc = calculateUC(w7,w8,w9,va,vb);
           double vc = 1/(1+Math.pow(Math.E,-uc));
-          // double E = 0.5*Math.pow((vc - y),2);
           double dEdVc = vc - y;
           double dEdUc = dEdVc*vc*(1-vc);
 
@@ -519,31 +517,42 @@ public class Neural{
           for(int j = 0; j<eval.length;j++){
             double eval_ua = calculateUA(new_w1, new_w2, new_w3, eval[j][0], eval[j][1]);
             double eval_va = Math.max(eval_ua,0);
-            // double ub = 1*new_w4 + eval[j][0]*new_w5 + eval[j][1]*new_w6;
             double eval_ub = calculateUB(new_w4,new_w5,new_w6,eval[j][0],eval[j][1]);
             double eval_vb = Math.max(eval_ub,0);
-            // double uc = 1*new_w7 + va*new_w8 + vb*new_w9;
             double eval_uc = calculateUC(new_w7,new_w8,new_w9,eval_va,eval_vb);
             double eval_vc = 1/(1+Math.pow(Math.E,-eval_uc));
             E += 0.5*Math.pow((eval_vc - eval[j][2]),2);
           }
-          // E = E/25;
           double new_ua = calculateUA(new_w1, new_w2, new_w3, x1, x2);
           double new_va = Math.max(new_ua,0);
-          // double ub = 1*w4 + x1*w5 + x2*w6;
           double new_ub = calculateUB(new_w4,new_w5,new_w6,x1,x2);
           double new_vb = Math.max(new_ub,0);
-          // double uc = 1*w7 + va*w8 + vb*w9;
           double new_uc = calculateUC(new_w7,new_w8,new_w9,new_va,new_vb);
           double new_vc = 1/(1+Math.pow(Math.E,-new_uc));
-          // double new_E = 0.5*Math.pow((new_vc - y),2);
-          // System.out.printf("%.5f %.5f %.5f\n",x1,x2,y);
-          // System.out.printf("%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n",new_w1,new_w2,new_w3,new_w4,new_w5,new_w6,new_w7,new_w8,new_w9);
-          // System.out.printf("%.5f\n", E);
 
+        }
+        if(E>oldE){
+          System.out.println(t+1);
+          System.out.printf("%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n",w1,w2,w3,w4,w5,w6,w7,w8,w9);
+          System.out.printf("%.5f\n",E);
+          break;
+        }
+        oldE = E;
       }
-      System.out.printf("%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n",w1,w2,w3,w4,w5,w6,w7,w8,w9);
-      System.out.printf("%.5f\n", E);
-    }}
+        double test_A=0;
+        for(int k=0;k<test.length;k++){
+          double test_ua = calculateUA(w1, w2, w3, test[k][0], test[k][1]);
+          double test_va = Math.max(test_ua,0);
+          double test_ub = calculateUB(w4,w5,w6,test[k][0],test[k][1]);
+          double test_vb = Math.max(test_ub,0);
+          double test_uc = calculateUC(w7,w8,w9,test_va,test_vb);
+          double test_vc = 1/(1+Math.pow(Math.E,-test_uc));
+          if(test_vc >= 0.5){test_vc=1;}
+          else test_vc=0;
+          if(test_vc == test[k][2])test_A++;
+
+        }
+        System.out.printf("%.5f\n",(test_A/test.length));
+    }
   }
 }
