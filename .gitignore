@@ -1,2 +1,4 @@
-# ignore all zips 
+# ignore all zips
 *.zip
+/Introduction_To_OS/Project_1a/test.txt
+/Introduction_To_OS/Lecture_Resources/*
