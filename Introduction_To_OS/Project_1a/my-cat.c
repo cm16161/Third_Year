@@ -8,7 +8,7 @@ int main(int argc, char *argv[]){
     exit(1);
   }
 
-  char * filename = argv[1];
+  char *filename = argv[1];
   FILE *fp = fopen(filename, "r");
   int n = 128;
   char str[n];
