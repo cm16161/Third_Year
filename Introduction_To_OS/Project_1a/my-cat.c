@@ -3,12 +3,13 @@
 
 int main(int argc, char *argv[]){
 
-  if(argc != 2){
-    fprintf(stderr, "usage: my-cat <file>\n");
+  if(argc < 2){
+    fprintf(stderr, "usage: my-cat [file ...]\n");
     exit(1);
   }
+  for (int i =1; i<argc; i++){
 
-  char *filename = argv[1];
+  char *filename = argv[i];
   FILE *fp = fopen(filename, "r");
   int n = 128;
   char str[n];
@@ -23,7 +24,8 @@ int main(int argc, char *argv[]){
   }
   if(feof(fp)){
     fclose(fp);
-    exit(0);
   }
+}
   return 0;
+  exit(0);
 }

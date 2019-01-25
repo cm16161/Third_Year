@@ -13,28 +13,14 @@ void replaceFirstInstance(char *find_term, char *replace_term, char *str, size_t
     exit(0);
   }
   strcpy(restofstring, buff_string);
-  strncpy(ret, replace_term, strlen(ret));
-  strcat(str,restofstring);
-  printf("%s",str);
-}
-
-void updateFile(char *find_term, char *replace_term, char *str, size_t buff, FILE *fTemp){
-  int length = strlen(find_term);
-  char *ret;
-  ret = strstr(str, find_term);
-  char *buff_string= ret + length;
-  char restofstring[buff];
-  if(ret == NULL){
-    fputs(str, fTemp);
-    // exit(0);
+  if(strlen(ret) > strlen(replace_term)){
+    strncpy(ret, replace_term, strlen(ret));
   }
   else{
-    strcpy(restofstring, buff_string);
-    strncpy(ret, replace_term, strlen(ret));
-    strcat(str,restofstring);
-    // printf("%s",str);
-    fputs(str, fTemp);
+    strncpy(ret, replace_term, strlen(replace_term));
   }
+  strcat(str,restofstring);
+  printf("%s",str);
 }
 
 int main(int argc, char *argv[]){
@@ -42,8 +28,8 @@ int main(int argc, char *argv[]){
     fprintf(stderr, "my-sed: find_term replace_term [file ...]\n");
     exit(1);
   }
-  size_t buff = 128;
-  char str[buff];
+  size_t buff = 512;
+  char *str = malloc(buff);
   char *find_term = argv[1];
   char *replace_term = argv[2];
   if(argv[3] == NULL){
@@ -54,21 +40,15 @@ else{
   for(int i = 3; i<argc;i++){
     char * filename = argv[i];
     FILE *fp = fopen(filename, "r");
-    FILE *fTemp = fopen("replace.tmp","w+");
     if (fp == NULL) {
   	printf("cannot open file\n");
-    remove("replace.tmp");
     exit(1);
     }
-
     while (fgets(str,buff, fp) != NULL){
-      updateFile(find_term,replace_term,str,buff,fTemp);
+      replaceFirstInstance(find_term,replace_term,str,buff);
     }
     if(feof(fp)){
       fclose(fp);
-      fclose(fTemp);
-      remove(filename);
-      rename("replace.tmp", filename);
     }
 
   }
