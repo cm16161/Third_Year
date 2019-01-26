@@ -4,8 +4,7 @@
 int main(int argc, char *argv[]){
 
   if(argc < 2){
-    fprintf(stderr, "usage: my-cat [file ...]\n");
-    exit(1);
+    exit(0);
   }
   for (int i =1; i<argc; i++){
 
@@ -15,7 +14,7 @@ int main(int argc, char *argv[]){
   char str[n];
 
   if (fp == NULL) {
-	printf("cannot open file\n");
+	printf("my-cat: cannot open file\n");
   exit(1);
   }
 
