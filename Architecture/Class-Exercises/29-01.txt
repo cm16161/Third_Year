@@ -1,0 +1,18 @@
+1) f = g+(h-5)
+   subi h h 5
+   add  f g h
+
+b) ii
+
+c) iii
+
+d) lw  $t2 400($t1)
+   add $t3 $t2 $s2
+   sw $t3 200($t1)
+
+e) i
+
+f) Shift left until you reach the word, then shift right until the start, padding with zeros so that only the word remains
+
+2) $s1 = $s1 + 20 + $s0
+   $s3 = 4($s1)

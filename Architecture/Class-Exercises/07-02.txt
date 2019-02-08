@@ -1,0 +1,18 @@
+1a) i, iv, vi
+b)  ii
+
+2a) (a^¬b^¬c_in) v (¬a^b^¬c_in) v (¬a^¬b^c_in) v (a^b^c_in)
+b)  (a xor b) xor c_in
+
+3a) addu $t1, $s0, $s2
+    sltu $t7, $t0, $s0
+    addu $t2, $s1, $s3
+    addu $t1, $t2, $t7
+
+b)  addu $t0, $s0, $s3
+    sltu $t7, $t0, $s0
+    addu $t2, $s1, $s4
+    addu $t1, $t2, $t7
+    sltu $t8, $t1, $t2
+    addu $t9, $s2, $s5
+    addu $t2, $t9, $t8

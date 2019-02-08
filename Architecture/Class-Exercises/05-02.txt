@@ -1,0 +1,24 @@
+1aI) 1, 2, 3
+
+II) 1
+
+bI) 4
+
+II) 5
+
+III) 4
+
+c) sll $zero, $zero, 0
+
+2a) 0x21346001
+    0x22730001
+    0x16A8000C
+
+b) Integer                       i is stored in $s3
+   Integer                       k is stored in $s5
+   Base address of integer array A is stored in $t1
+
+
+3) add $t0, $s3, $s5
+   lbu $t2, 16($t0)
+   add $s2, $t2, $s4
