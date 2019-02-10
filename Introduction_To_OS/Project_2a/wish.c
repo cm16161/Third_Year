@@ -6,6 +6,7 @@
 #include <sys/wait.h>
 
 char error_message[30] = "An error has occurred\n";
+int numberOfArgs = 32;
 
 void displayError(){
   write(STDERR_FILENO,error_message,strlen(error_message));
@@ -20,28 +21,7 @@ void exitHandler(int argNum){
   }
 }
 
-/* void lsHandler(char* args[32], char* command, int argNum){ */
-/*   int status; */
-/*   char* execute[argNum+2]; */
-/*   execute[argNum+1]=NULL; */
-/*   execute[0]=command; */
-/*   if(argNum>0){ */
-/*     for(int i=1;i<=argNum;i++){ */
-/*       printf("%s\n",args[i-1]); */
-/*       execute[i] = args[i-1]; */
-/*     } */
-/*   } */
-   
-/*   if(fork() == 0){ */
-/*     execv(execute[0],execute); */
-/*   } */
-/*   else{ */
-/*     wait(&status); */
-/*   } */
-/* } */
-
-
-void functionHandler(char* args[32], char* command, int argNum){
+void functionHandler(char* args[numberOfArgs], char* command, int argNum){
   int status;
   char* execute[argNum+2];
   execute[argNum+1]=NULL;
@@ -59,30 +39,50 @@ void functionHandler(char* args[32], char* command, int argNum){
   }
 }
 
-void tokenHandler(char* command, char* args[32], int argNum, char* path){
+
+void cdHandler(char* args[numberOfArgs], int argNum){
+  if(argNum != 1){
+    displayError();
+  }
+  else{
+    int success = 0;
+    success = chdir(args[0]);
+    if(success != 0){
+      displayError();
+    }
+  }
+}
+
+void tokenHandler(char* command, char* args[numberOfArgs], int argNum, char* path){
   if(strcmp(command,"exit")==0){
     exitHandler(argNum);
   }
-  char* executable = malloc(strlen(path)+1+strlen(command));
-  strcpy(executable,path);
-  strcat(executable,command);
-  int exec = 0;
-  exec = access(executable,X_OK);
-  if(exec != 0){
-    path = "/usr/bin/";
-    free(executable);
-    executable= malloc(strlen(path)+1+strlen(command));
+  else if(strcmp(command,"cd")==0){
+    cdHandler(args, argNum);
+  }
+  else{
+    char* executable = malloc(strlen(path)+1+strlen(command));
     strcpy(executable,path);
     strcat(executable,command);
+    int exec = 0;
     exec = access(executable,X_OK);
+    if(exec != 0){
+      path = "/usr/bin/";
+      free(executable);
+      executable= malloc(strlen(path)+1+strlen(command));
+      strcpy(executable,path);
+      strcat(executable,command);
+      exec = access(executable,X_OK);
+    }
+    if(exec == 0){
+      functionHandler(args,executable,argNum);
+    }
+    
+    else{
+      displayError();
+    }    
   }
-  if(exec == 0){
-     functionHandler(args,executable,argNum);
-  }
- 
-  else{
-    displayError();
-  }
+  
 }
 
 
@@ -97,7 +97,7 @@ int main(int argc,char* argv[]){
   int eof = 0;
   const char delim[10] =" \n\t";
   char *token;
-  char *args[32];
+  char *args[numberOfArgs];
   char *command;
   buffer = (char *)malloc(buffsize * sizeof(char));
   if( buffer == NULL)
