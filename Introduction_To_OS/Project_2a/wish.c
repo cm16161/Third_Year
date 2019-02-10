@@ -121,7 +121,7 @@ int main(int argc,char* argv[]){
   char *token;
   char *args[numberOfArgs];
   char *command;
-  int historySize =1;
+  size_t historySize =1;
   char **history = calloc(historySize, sizeof(char*));
   size_t argLength;
   /* history[0]="TEST\n"; */
@@ -154,12 +154,14 @@ int main(int argc,char* argv[]){
         /* printf("%s",history[i]); */
       /* } */
       /* printf("HISTORYINDEX: %d\n",historyIndex); */
+
       if(historyIndex == historySize){
         historySize *=2;
+        history = (char **) realloc(history, historySize*sizeof(char *));
         /* printf("HISTORYSIZE: %d\n",historySize); */
-        /* history = (char **) realloc(history,historySize * sizeof(char)); */
       }
-      while(token != NULL){
+
+        while(token != NULL){
         token=strtok(NULL,delim);
         args[count] = token;
         count++;
