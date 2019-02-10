@@ -8,6 +8,8 @@
 char error_message[30] = "An error has occurred\n";
 int numberOfArgs = 32;
 int historyIndex = 0;
+char* path = "/bin/";
+
 
 void displayError(){
   write(STDERR_FILENO,error_message,strlen(error_message));
@@ -72,7 +74,28 @@ void historyHandler(char* args[numberOfArgs], int argNum, char** history){
   }
 }
 
-void tokenHandler(char* command, char* args[numberOfArgs], int argNum, char* path, char** history){
+void pathHandler(char* args[numberOfArgs], int argNum){
+  if(argNum == 0){
+    path = "";
+  }
+  else{
+    int pathSize = argNum-1;
+    for (int i = 0;i<argNum;i++){
+      pathSize+= strlen(args[i]);
+    }
+    char *temp = (char *) malloc(pathSize * sizeof(char));
+    /* char * */
+    strcat(temp,args[0]);
+    /* printf("%s\n",args[0]); */
+    for(int i = 1;i<argNum;i++){
+      strcat(temp,":");
+      strcat(temp,args[i]);
+    }
+    path = temp;
+  }
+}
+
+void tokenHandler(char* command, char* args[numberOfArgs], int argNum, char** history){
   if(strcmp(command,"exit") ==0){
     exitHandler(argNum);
   }
@@ -82,34 +105,58 @@ void tokenHandler(char* command, char* args[numberOfArgs], int argNum, char* pat
   else if(strcmp(command,"history")==0){
     historyHandler(args,argNum,history);
   }
+  else if(strcmp(command,"path")==0){
+    pathHandler(args,argNum);
+  }
   else{
-    char* executable = malloc(strlen(path)+1+strlen(command));
-    strcpy(executable,path);
-    strcat(executable,command);
     int exec = 0;
-    exec = access(executable,X_OK);
-    if(exec != 0){
-      path = "/usr/bin/";
-      free(executable);
-      executable= malloc(strlen(path)+1+strlen(command));
-      strcpy(executable,path);
-      strcat(executable,command);
-      exec = access(executable,X_OK);
+    char* tryPath;
+    tryPath = strtok(path,":");
+    /* printf("%ld\n",strlen(tryPath)); */
+    if(tryPath == NULL){
+      displayError();
     }
-    if(exec == 0){
-      functionHandler(args,executable,argNum);
+    else{
+      if(strcmp((tryPath+strlen(tryPath)),"/") != 0){
+        strcat(tryPath,"/");
+      }
+    while(tryPath != NULL){
+      char* executable = malloc(strlen(tryPath)+1+strlen(command));
+      strcpy(executable,tryPath);
+      strcat(executable,command);
+      exec = access(executable,X_OK);      
+      if(exec == 0){
+        functionHandler(args,executable,argNum);
+        break;
+      }
+      tryPath = strtok(NULL,":");
+      /* else{ */
+        /* displayError(); */
+        /* break; */
+      /* } */
+    }      
+    }
+    if(exec != 0){
+      displayError();
     }
     
-    else{
-      displayError();
-    }    
+    /* if(exec != 0){ */
+      /* path = "/usr/bin/"; */
+      /* free(executable); */
+      /* executable= malloc(strlen(path)+1+strlen(command)); */
+      /* strcpy(executable,path); */
+      /* strcat(executable,command); */
+      /* exec = access(executable,X_OK); */
+    /* } */
+   
+    
+       
   }
   
 }
 
 
 int main(int argc,char* argv[]){
-  char* path = "/bin/";
   if(argc>2){
     displayError(); 
     exit(1);
@@ -167,7 +214,7 @@ int main(int argc,char* argv[]){
         count++;
       }
       count--;
-      tokenHandler(command, args,count, path, history);
+      tokenHandler(command, args,count, history);
     }
     eof= feof(stdin);
   }
