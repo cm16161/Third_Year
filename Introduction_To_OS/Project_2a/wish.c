@@ -100,6 +100,21 @@ void pathHandler(char* args[numberOfArgs], int argNum){
   }
 }
 
+void redirectHandler(char* command, char* args[numberOfArgs], int argNum){
+  if(strcmp(args[argNum-2],">")!= 0){
+    displayError();
+  }
+  else{
+    char *filename = args[argNum-1];
+    if(access(filename, F_OK) != -1){
+      remove(filename);
+    }
+    FILE *fp = fopen(filename, "w");
+    fputs("test\n",fp);
+    fclose(fp);
+  }
+}
+
 void tokenHandler(char* command, char* args[numberOfArgs], int argNum, char** history){
   if(strcmp(command,"exit") ==0){
     exitHandler(argNum);
@@ -122,45 +137,22 @@ void tokenHandler(char* command, char* args[numberOfArgs], int argNum, char** hi
       displayError();
     }
     else{
-      /* printf("%s\n",tryPath+strlen(tryPath)); */
-      /* if(strcmp((tryPath+strlen(tryPath)-1),"/") != 0){ */
-        /* printf("TEST\n"); */
-        /* tryPath = (char *) realloc(tryPath,strlen(tryPath)+1*sizeof(char)); */
-        /* strcat(tryPath,"/"); */
-        /* printf("%s\n",tryPath); */
-        /* (tryPath+strlen(tryPath)) = "/"; */
-      /* } */
-    while(tryPath != NULL){
-      char* executable = malloc(strlen(tryPath)+1+strlen(command));
-      strcpy(executable,tryPath);
-      strcat(executable,command);
-      exec = access(executable,X_OK);      
-      if(exec == 0){
-        functionHandler(args,executable,argNum);
-        break;
-      }
-      tryPath = strtok(NULL,":");
-      /* else{ */
-        /* displayError(); */
-        /* break; */
-      /* } */
-    }      
+      while(tryPath != NULL){
+        char* executable = malloc(strlen(tryPath)+1+strlen(command));
+        strcpy(executable,tryPath);
+        strcat(executable,command);
+        exec = access(executable,X_OK);      
+        if(exec == 0){
+          functionHandler(args,executable,argNum);
+          break;
+        }
+        tryPath = strtok(NULL,":");
+      }      
     }
     if(exec != 0){
       displayError();
     }
     
-    /* if(exec != 0){ */
-      /* path = "/usr/bin/"; */
-      /* free(executable); */
-      /* executable= malloc(strlen(path)+1+strlen(command)); */
-      /* strcpy(executable,path); */
-      /* strcat(executable,command); */
-      /* exec = access(executable,X_OK); */
-    /* } */
-   
-    
-       
   }
   
 }
@@ -192,6 +184,7 @@ int main(int argc,char* argv[]){
       exit(1);
     }
   while(!eof){
+    int redirect = 0;
     int noInput = 0;
     int count =0;
     printf("wish> ");
@@ -218,13 +211,25 @@ int main(int argc,char* argv[]){
         /* printf("HISTORYSIZE: %d\n",historySize); */
       }
 
-        while(token != NULL){
+      while(token != NULL){
         token=strtok(NULL,delim);
+        /* printf("%s\n",token); */
+        /* if(strcmp(token,">") == 0){redirect = 1;} */
         args[count] = token;
         count++;
       }
       count--;
-      tokenHandler(command, args,count, history);
+      for(int i = 0; i<count;i++){
+        if(strcmp(args[i],">")==0){
+          redirect = 1;
+        }
+      }
+      if(redirect ==1 ){
+        redirectHandler(command,args,count);
+      }
+      else{
+        tokenHandler(command, args,count, history);
+      }
     }
     eof= feof(stdin);
   }
