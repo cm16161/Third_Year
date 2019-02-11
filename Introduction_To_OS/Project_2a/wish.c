@@ -80,16 +80,21 @@ void pathHandler(char* args[numberOfArgs], int argNum){
   }
   else{
     int pathSize = argNum-1;
+    pathSize*=2;
     for (int i = 0;i<argNum;i++){
       pathSize+= strlen(args[i]);
     }
     char *temp = (char *) malloc(pathSize * sizeof(char));
-    /* char * */
     strcat(temp,args[0]);
-    /* printf("%s\n",args[0]); */
+    if(strcmp(temp+strlen(temp)-1,"/")!= 0){
+      strcat(temp,"/");
+    }
     for(int i = 1;i<argNum;i++){
       strcat(temp,":");
       strcat(temp,args[i]);
+      if(strcmp(args[i]+strlen(args[i]-1),"/")!=0){
+        strcat(temp,"/");
+      }
     }
     path = temp;
   }
@@ -118,13 +123,13 @@ void tokenHandler(char* command, char* args[numberOfArgs], int argNum, char** hi
     }
     else{
       /* printf("%s\n",tryPath+strlen(tryPath)); */
-      if(strcmp((tryPath+strlen(tryPath)-1),"/") != 0){
+      /* if(strcmp((tryPath+strlen(tryPath)-1),"/") != 0){ */
         /* printf("TEST\n"); */
         /* tryPath = (char *) realloc(tryPath,strlen(tryPath)+1*sizeof(char)); */
-        strcat(tryPath,"/");
+        /* strcat(tryPath,"/"); */
         /* printf("%s\n",tryPath); */
         /* (tryPath+strlen(tryPath)) = "/"; */
-      }
+      /* } */
     while(tryPath != NULL){
       char* executable = malloc(strlen(tryPath)+1+strlen(command));
       strcpy(executable,tryPath);
