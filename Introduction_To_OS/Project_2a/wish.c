@@ -8,7 +8,7 @@
 char error_message[30] = "An error has occurred\n";
 int numberOfArgs = 32;
 int historyIndex = 0;
-char* path = "/bin/";
+char* path = "/bin/\0";
 
 
 void displayError(){
@@ -110,15 +110,20 @@ void tokenHandler(char* command, char* args[numberOfArgs], int argNum, char** hi
   }
   else{
     int exec = 0;
-    char* tryPath;
+    char* tryPath = (char *) malloc(strlen(path)*sizeof(char));
     tryPath = strtok(path,":");
     /* printf("%ld\n",strlen(tryPath)); */
     if(tryPath == NULL){
       displayError();
     }
     else{
-      if(strcmp((tryPath+strlen(tryPath)),"/") != 0){
+      /* printf("%s\n",tryPath+strlen(tryPath)); */
+      if(strcmp((tryPath+strlen(tryPath)-1),"/") != 0){
+        /* printf("TEST\n"); */
+        /* tryPath = (char *) realloc(tryPath,strlen(tryPath)+1*sizeof(char)); */
         strcat(tryPath,"/");
+        /* printf("%s\n",tryPath); */
+        /* (tryPath+strlen(tryPath)) = "/"; */
       }
     while(tryPath != NULL){
       char* executable = malloc(strlen(tryPath)+1+strlen(command));
