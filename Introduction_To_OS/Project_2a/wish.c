@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 char error_message[30] = "An error has occurred\n";
 int numberOfArgs = 32;
@@ -100,20 +101,6 @@ void pathHandler(char* args[numberOfArgs], int argNum){
   }
 }
 
-void redirectHandler(char* command, char* args[numberOfArgs], int argNum){
-  if(strcmp(args[argNum-2],">")!= 0){
-    displayError();
-  }
-  else{
-    char *filename = args[argNum-1];
-    if(access(filename, F_OK) != -1){
-      remove(filename);
-    }
-    FILE *fp = fopen(filename, "w");
-    fputs("test\n",fp);
-    fclose(fp);
-  }
-}
 
 void tokenHandler(char* command, char* args[numberOfArgs], int argNum, char** history){
   if(strcmp(command,"exit") ==0){
@@ -157,6 +144,28 @@ void tokenHandler(char* command, char* args[numberOfArgs], int argNum, char** hi
   
 }
 
+void redirectHandler(char* command, char* args[numberOfArgs], int argNum, char** history){
+  if(strcmp(args[argNum-2],">")!= 0){
+    displayError();
+  }
+  else{
+    char *filename = args[argNum-1];
+    if(access(filename, F_OK) != -1){
+      remove(filename);
+    }
+    FILE *fp = fopen(filename, "w");
+    /* fputs("test\n",fp); */
+    fclose(fp);
+    int filedesc = open(filename, O_WRONLY | O_APPEND);
+    int savedStdout = dup(1);
+    dup2(filedesc, 1);
+    argNum = argNum -2;
+    tokenHandler(command, args, argNum,history);
+    dup2(savedStdout, 1);
+    close(savedStdout);
+    close(filedesc);
+  }
+}
 
 int main(int argc,char* argv[]){
   if(argc>2){
@@ -225,7 +234,7 @@ int main(int argc,char* argv[]){
         }
       }
       if(redirect ==1 ){
-        redirectHandler(command,args,count);
+        redirectHandler(command,args,count, history);
       }
       else{
         tokenHandler(command, args,count, history);
