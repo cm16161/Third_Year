@@ -17,7 +17,7 @@ module mux2_1(InA, InB, S, Out);
    not1 not1 (.in1(AS), .out(notAS));
    not1 not2 (.in1(BS), .out(notBS));
    nor2 nor0 (.in1(notAS), .in2(notBS), .out(result));
-   //   not1 md (.in1(result), .out(Out));
-   assign Out = ~result;
+   not1 md (.in1(result), .out(Out));
+   // assign Out = ~result;
 
 endmodule
