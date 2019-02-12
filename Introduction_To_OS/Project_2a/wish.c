@@ -154,7 +154,6 @@ void redirectHandler(char* command, char* args[numberOfArgs], int argNum, char**
       remove(filename);
     }
     FILE *fp = fopen(filename, "w");
-    /* fputs("test\n",fp); */
     fclose(fp);
     int filedesc = open(filename, O_WRONLY | O_APPEND);
     int savedStdout = dup(1);
@@ -164,6 +163,46 @@ void redirectHandler(char* command, char* args[numberOfArgs], int argNum, char**
     dup2(savedStdout, 1);
     close(savedStdout);
     close(filedesc);
+  }
+}
+
+void pipeHandler(char* command, char* args[numberOfArgs], int argNum, char** history){
+  int pipecount =0;
+  int pipelocation=0;
+  char* secondArgs[numberOfArgs];
+  for(int i =0;i<argNum;i++){
+    if(strcmp(args[i],"|") ==0){
+      pipelocation = i;
+      pipecount++;
+    }
+  }
+  if(pipecount != 1){
+    displayError();
+  }
+  else{
+    int secondArgNum=0;
+    char *secondCommand = args[pipelocation+1];
+    for(int i = (pipelocation+2);i<argNum;i++){
+      secondArgs[i-pipelocation-2] = args[i];
+      secondArgNum++;
+    }
+    argNum = pipelocation;
+    FILE *fp = fopen("temp","w");
+    fclose(fp);
+    int filedesc = open("temp", O_WRONLY | O_APPEND);
+    int savedStdout = dup(1);
+    dup2(filedesc,1);
+    tokenHandler(command,args,argNum,history);
+    
+    dup2(savedStdout,1);
+    close(filedesc);
+    close(savedStdout);
+    
+    secondArgs[secondArgNum] = "temp";
+    secondArgNum++;
+    tokenHandler(secondCommand,secondArgs,secondArgNum,history);
+    remove("temp");
+    
   }
 }
 
@@ -194,6 +233,7 @@ int main(int argc,char* argv[]){
     }
   while(!eof){
     int redirect = 0;
+    int pipe = 0;
     int noInput = 0;
     int count =0;
     printf("wish> ");
@@ -232,9 +272,18 @@ int main(int argc,char* argv[]){
         if(strcmp(args[i],">")==0){
           redirect = 1;
         }
+        if(strcmp(args[i],"|")==0){
+          pipe = 1;
+        }
       }
-      if(redirect ==1 ){
+      if(redirect == 1 && pipe ==1){
+        displayError();
+      }
+      else if(redirect ==1 ){
         redirectHandler(command,args,count, history);
+      }
+      else if(pipe == 1){
+        pipeHandler(command, args,count,history);
       }
       else{
         tokenHandler(command, args,count, history);
