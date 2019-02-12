@@ -183,13 +183,14 @@ void pipeHandler(char* command, char* args[numberOfArgs], int argNum, char** his
     int secondArgNum=0;
     char *secondCommand = args[pipelocation+1];
     for(int i = (pipelocation+2);i<argNum;i++){
+
       secondArgs[i-pipelocation-2] = args[i];
       secondArgNum++;
     }
     argNum = pipelocation;
-    FILE *fp = fopen("temp","w");
+    FILE *fp = fopen("temporary.wish","w");
     fclose(fp);
-    int filedesc = open("temp", O_WRONLY | O_APPEND);
+    int filedesc = open("temporary.wish", O_WRONLY | O_APPEND);
     int savedStdout = dup(1);
     dup2(filedesc,1);
     tokenHandler(command,args,argNum,history);
@@ -198,10 +199,10 @@ void pipeHandler(char* command, char* args[numberOfArgs], int argNum, char** his
     close(filedesc);
     close(savedStdout);
     
-    secondArgs[secondArgNum] = "temp";
+    secondArgs[secondArgNum] = "temporary.wish";
     secondArgNum++;
     tokenHandler(secondCommand,secondArgs,secondArgNum,history);
-    remove("temp");
+    remove("temporary.wish");
     
   }
 }
@@ -211,6 +212,7 @@ int main(int argc,char* argv[]){
     displayError(); 
     exit(1);
   }
+  
   char *buffer;
   size_t buffsize = 32;
   int eof = 0;
@@ -221,6 +223,8 @@ int main(int argc,char* argv[]){
   size_t historySize =1;
   char **history = calloc(historySize, sizeof(char*));
   size_t argLength;
+  char *filename;
+  FILE *fp;
   /* history[0]="TEST\n"; */
   /* history[1]="WORLD\n"; */
   /* history[2]="MOOO\n"; */
@@ -231,68 +235,95 @@ int main(int argc,char* argv[]){
       perror("Unable to allocate buffer");
       exit(1);
     }
-  while(!eof){
-    int redirect = 0;
-    int pipe = 0;
-    int noInput = 0;
-    int count =0;
-    printf("wish> ");
-    argLength = getline(&buffer, &buffsize, stdin);
-    char line[argLength];
-    strcpy(line,buffer);
-    /* printf("%s",line); */
-    token = strtok(buffer,delim);
-    if(token==NULL){
-      noInput=1;
-    }
-    if(!noInput){
-      command = token;
-      history[historyIndex] = strdup(line);
-      historyIndex++;
-      /* for(int i =0;i<historyIndex;i++){ */
-        /* printf("%s",history[i]); */
-      /* } */
-      /* printf("HISTORYINDEX: %d\n",historyIndex); */
-
-      if(historyIndex == historySize){
-        historySize *=2;
-        history = (char **) realloc(history, historySize*sizeof(char *));
-        /* printf("HISTORYSIZE: %d\n",historySize); */
-      }
-
-      while(token != NULL){
-        token=strtok(NULL,delim);
-        /* printf("%s\n",token); */
-        /* if(strcmp(token,">") == 0){redirect = 1;} */
-        args[count] = token;
-        count++;
-      }
-      count--;
-      for(int i = 0; i<count;i++){
-        if(strcmp(args[i],">")==0){
-          redirect = 1;
-        }
-        if(strcmp(args[i],"|")==0){
-          pipe = 1;
-        }
-      }
-      if(redirect == 1 && pipe ==1){
-        displayError();
-      }
-      else if(redirect ==1 ){
-        redirectHandler(command,args,count, history);
-      }
-      else if(pipe == 1){
-        pipeHandler(command, args,count,history);
-      }
-      else{
-        tokenHandler(command, args,count, history);
-      }
-    }
-    eof= feof(stdin);
+  if(argc == 2){
+    filename = argv[1];
+    fp = fopen(filename,"r");
+    /* printf("%s\n",filename); */
   }
 
-  
+  /* else{ */
+   
+    while(!eof){
+      int redirect = 0;
+      int pipe = 0;
+      int noInput = 0;
+      int count =0;
+      if(argc==2){
+        argLength = getline(&buffer, &buffsize, fp);
+        if(feof(fp)){
+          break;
+        }
+      }
+      else{
+        printf("wish> ");
+        argLength = getline(&buffer, &buffsize, stdin);        
+      }
+      
+      char line[argLength];
+      strcpy(line,buffer);
+      /* printf("%s",line); */
+      token = strtok(buffer,delim);
+      printf("%s\n",token);
+      if(token==NULL){
+        noInput=1;
+      }
+      if(!noInput){
+        command = token;
+        history[historyIndex] = strdup(line);
+        historyIndex++;
+        /* for(int i =0;i<historyIndex;i++){ */
+        /* printf("%s",history[i]); */
+        /* } */
+        /* printf("HISTORYINDEX: %d\n",historyIndex); */
+        
+        if(historyIndex == historySize){
+          historySize *=2;
+          history = (char **) realloc(history, historySize*sizeof(char *));
+          /* printf("HISTORYSIZE: %d\n",historySize); */
+        }
+        
+        while(token != NULL){
+          token=strtok(NULL,delim);
+          /* printf("%s\n",token); */
+          /* if(strcmp(token,">") == 0){redirect = 1;} */
+          args[count] = token;
+          count++;
+        }
+        count--;
+        for(int i = 0; i<count;i++){
+          if(strcmp(args[i],">")==0){
+            redirect = 1;
+          }
+          if(strcmp(args[i],"|")==0){
+            pipe = 1;
+          }
+        }
+        if(redirect == 1 && pipe ==1){
+          displayError();
+        }
+        else if(redirect ==1 ){
+          redirectHandler(command,args,count, history);
+        }
+        else if(pipe == 1){
+          pipeHandler(command, args,count,history);
+        }
+        else{
+          tokenHandler(command, args,count, history);
+        }
+      }
+      /* if(argc == 2){ */
+        /* if(feof(fp)){ */
+          /* break; */
+        /* } */
+      /* } */
+      if(argc!=2){
+        eof= feof(stdin);
+      }
+    }
+    if(argc==2){
+      fclose(fp);
+    }
+  /* } */
   return 0;
   exit(0);
 }

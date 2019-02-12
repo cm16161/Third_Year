@@ -1,0 +1,13 @@
+cat Makefile | grep default
+ls
+history
+history 2
+ls
+echo test > test
+path
+ls
+path /usr/bin
+ls
+path /home /bin
+rm test
+ls
