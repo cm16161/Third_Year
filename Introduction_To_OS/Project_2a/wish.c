@@ -263,7 +263,7 @@ int main(int argc,char* argv[]){
       strcpy(line,buffer);
       /* printf("%s",line); */
       token = strtok(buffer,delim);
-      printf("%s\n",token);
+      /* printf("%s\n",token); */
       if(token==NULL){
         noInput=1;
       }
