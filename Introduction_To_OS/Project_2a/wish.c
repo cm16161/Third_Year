@@ -62,13 +62,13 @@ void historyHandler(char* args[numberOfArgs], int argNum, char** history){
   }
   else{
     if(argNum==0){
-      for(int i = 0; i<historyIndex-1;i++){
+      for(int i = 0; i<historyIndex;i++){
         printf("%s",history[i]);
       }
     }
     else{
       int n = atoi(args[0]);
-      for(int i=historyIndex-1-n;i<historyIndex-1;i++){
+      for(int i=historyIndex-n;i<historyIndex-1;i++){
         printf("%s",history[i]);
       }
     }

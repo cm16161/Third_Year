@@ -1,0 +1,17 @@
+1a) 1
+ b) 1
+
+2)  sltu $t0, $s0, $s2
+    sll  $t0, $t0, 31
+    addu $s0, $s0, $t0
+    subu $t0, $s0, $s2
+    subu $t1, $s1, $s3
+
+3) G03 = g3 + p3*g2 + p3*p2*g1 + p3*p2*p1*g0, P03 = p3*p2*p1*p0
+
+   c1  =  g0 + p00*c0
+   c2  =  g1 + p1(g0 + p0*c0)
+   c3  =  g2 + p2(g1 + p1(g0 + p0*c0))
+   c4  =  g3 + p3(g2 + p2(g1 + p1(g0 + p0*c0)))
+   G03 =  g3 + p3*g2 + p3*p2*g1 + p3*p2*p1*g0
+   P03 =  p3*p2*p1*p0
