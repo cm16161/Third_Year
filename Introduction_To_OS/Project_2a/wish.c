@@ -119,7 +119,6 @@ void tokenHandler(char* command, char* args[numberOfArgs], int argNum, char** hi
     int exec = 0;
     char* tryPath = (char *) malloc(strlen(path)*sizeof(char));
     tryPath = strtok(path,":");
-    /* printf("%ld\n",strlen(tryPath)); */
     if(tryPath == NULL){
       displayError();
     }
@@ -225,10 +224,6 @@ int main(int argc,char* argv[]){
   size_t argLength;
   char *filename;
   FILE *fp;
-  /* history[0]="TEST\n"; */
-  /* history[1]="WORLD\n"; */
-  /* history[2]="MOOO\n"; */
-  /* history= (char **)malloc(historySize * sizeof(char)); */
   buffer = (char *)malloc(buffsize * sizeof(char));
   if( buffer == NULL)
     {
@@ -241,10 +236,8 @@ int main(int argc,char* argv[]){
     if(fp == NULL){
       displayError();
       exit(1);}
-    /* printf("%s\n",filename); */
   }
 
-  /* else{ */
    
     while(!eof){
       int redirect = 0;
@@ -262,12 +255,9 @@ int main(int argc,char* argv[]){
 	fflush(stdout);
         argLength = getline(&buffer, &buffsize, stdin);        
       }
-      //printf("wish> ");
       char line[argLength];
       strcpy(line,buffer);
-      // printf("%s",line);
       token = strtok(buffer,delim);
-      //printf("%s\n",token);
       if(token==NULL){
         noInput=1;
       }
@@ -275,21 +265,14 @@ int main(int argc,char* argv[]){
         command = token;
         history[historyIndex] = strdup(line);
         historyIndex++;
-        /* for(int i =0;i<historyIndex;i++){ */
-        /* printf("%s",history[i]); */
-        /* } */
-        /* printf("HISTORYINDEX: %d\n",historyIndex); */
         
         if(historyIndex == historySize){
           historySize *=2;
           history = (char **) realloc(history, historySize*sizeof(char *));
-          /* printf("HISTORYSIZE: %d\n",historySize); */
         }
         
         while(token != NULL){
           token=strtok(NULL,delim);
-          /* printf("%s\n",token); */
-          /* if(strcmp(token,">") == 0){redirect = 1;} */
           args[count] = token;
           count++;
         }
@@ -315,11 +298,6 @@ int main(int argc,char* argv[]){
           tokenHandler(command, args,count, history);
         }
       }
-      /* if(argc == 2){ */
-        /* if(feof(fp)){ */
-          /* break; */
-        /* } */
-      /* } */
       if(argc!=2){
         eof= feof(stdin);
       }
@@ -327,7 +305,6 @@ int main(int argc,char* argv[]){
     if(argc==2){
       fclose(fp);
     }
-  /* } */
   return 0;
   exit(0);
 }
