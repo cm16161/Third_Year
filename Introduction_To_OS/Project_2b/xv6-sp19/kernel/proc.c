@@ -69,6 +69,10 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
   p->priority = 3;
+  for(int c = 0; c<4;c++){
+    p->ticks[c] = 0;
+    p->wait_ticks[c] = 0;
+  }
   p->ticks3 = 0;
   p->ticks2 = 0;
   p->ticks1 = 0;
@@ -266,28 +270,26 @@ scheduler(void)
 {
   struct proc *p;
   /* struct proc *queue[NPROC][4]; */
-  for(int i = 0; i<NPROC;i++){
-    st.inuse[i] = 0;
-    st.pid[i] = 0;
-    st.priority[i] = 0;
-    st.state[i] = UNUSED;
-    for(int j = 0; j<4;j++){
-      st.ticks[i][j] = 0;
-      st.wait_ticks[i][j] = 0;
-    }
-  }
-  /* int priorityLevel = 0; */
+  
+       /* int priorityLevel = 0; */
   for(;;){
+    for(int i = 0; i<NPROC;i++){
+      st.inuse[i] = 0;
+      st.pid[i] = 0;
+      st.priority[i] = 0;
+      st.state[i] = UNUSED;
+      for(int j = 0; j<4;j++){
+        st.ticks[i][j] = 0;
+        st.wait_ticks[i][j] = 0;
+      }
+    }        
     for(int priorityLevel = 3; priorityLevel >=0;priorityLevel--){
-      /* priorityLevel = 3; */
-      // Enable interrupts on  this processor.
       sti();
-
-      // Loop over process table looking for process to run.
       acquire(&ptable.lock);
-      int processesNum = 0;
-    
+      
       for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+        int processesNum = 0;
+        /* st.ticks[processesNum][priorityLevel] = p->ticks[priorityLevel]; */
         st.pid[processesNum] = p->pid;
         st.priority[processesNum] = p->priority;
         st.state[processesNum] = p->state;
@@ -298,49 +300,40 @@ scheduler(void)
         else{
           st.inuse[processesNum] = 1;
         }
-        /* cprintf("PRIORITY : %d\n",p->priority); */
-        if((p->priority != priorityLevel) && (p = &ptable.proc[NPROC])){
+        if(p->priority != priorityLevel){
           continue;
         }
+        for(int b = 0; b<4;b++){
+          p->ticks[b] = 0;
+        }
         if(p->priority==3){
-          p->ticks3  = 0;
           proc = p;
           for(int i = 0;i<8;i++){
             if(p->state != RUNNABLE){
-              /* cprintf("CONTINUE\n"); */
               continue;
             }
-            p->ticks3+= 1;
+            p->ticks[3]+= 1;
             switchuvm(p);
-            /* cprintf("process running is: %s, pid: %d\n",p->name, p->pid); */
-            /* cprintf("%d\n",p->ticks); */
             p->state = RUNNING;
             swtch(&cpu->scheduler, proc->context);
             switchkvm();
-            /* st.ticks[processesNum][3] +=1; */
-            /* cprintf("ITERATION COUNT: %d\n",p->ticks); */
-            // Process is done running for now.
-            // It should have changed its p->state before coming back
           }
-          if(p->ticks3 == 8){
-            /* cprintf("p->ticks3 = %d\n",p->ticks3); */
-            st.ticks[processesNum][3] = p->ticks3;
+          /* cprintf("p->ticks3 = %d\n",p->ticks[3]); */
+          st.ticks[processesNum][3] = p->ticks[3];
+          if(p->ticks[3] == 8){
+            st.ticks[processesNum][3] = p->ticks[3];
             p->priority -= 1;
-          }
-          else{
-            st.ticks[processesNum][3] = p->ticks3;
-          
           }
           proc = 0;        
         }
         else  if(p->priority == 2){
-          p->ticks2 = 0;
+          /* p->ticks2 = 0; */
           proc = p;
           for(int i = 0;i<16;i++){
             if(p->state != RUNNABLE){
               continue;
             }
-            p->ticks2 += 1;
+            p->ticks[2] += 1;
             switchuvm(p);
             p->state = RUNNING;
             swtch(&cpu->scheduler, proc->context);
@@ -349,21 +342,21 @@ scheduler(void)
             // Process is done running for now.
             // It should have changed its p->state before coming back
           }
-          st.ticks[processesNum][2] = p->ticks2;
-          if(p->ticks2 == 16){
+          st.ticks[processesNum][2] = p->ticks[2];
+          if(p->ticks[2] == 16){
             p->priority -= 1;
           }
           proc = 0;        
         }
 
         else if(p->priority == 1){
-          p->ticks1 = 0;
+          /* p->ticks1 = 0; */
           proc = p;
           for(int i = 0;i<32;i++){
             if(p->state != RUNNABLE){
               continue;
             }
-            p->ticks1 += 1;
+            p->ticks[1] += 1;
             switchuvm(p);
             p->state = RUNNING;
             swtch(&cpu->scheduler, proc->context);
@@ -372,20 +365,20 @@ scheduler(void)
             // Process is done running for now.
             // It should have changed its p->state before coming back
           }
-          st.ticks[processesNum][1] = p->ticks1;
-          if(p->ticks1 == 32){
+          st.ticks[processesNum][1] = p->ticks[1];
+          if(p->ticks[1] == 32){
             p->priority -= 1;
           }
           proc = 0;        
         }
         else  if(p->priority == 0){
-          p->ticks0 = 0;
+          /* p->ticks0 = 0; */
           while(p->state == RUNNABLE){
             /* if(p->state != RUNNABLE) */
             /* continue; */
             proc = p;
             switchuvm(p);
-            p->ticks0 += 1;
+            p->ticks[0] += 1;
             p->state = RUNNING;
             swtch(&cpu->scheduler, proc->context);
             switchkvm();
@@ -394,7 +387,7 @@ scheduler(void)
             // It should have changed its p->state before coming back
             /* p->priority -= 1; */
             proc = 0;           
-            st.ticks[processesNum][0] = p->ticks0;
+            st.ticks[processesNum][0] = p->ticks[0];
           }
           processesNum++;
         }

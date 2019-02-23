@@ -82,6 +82,8 @@ struct proc {
   int ticks2;
   int ticks1;
   int ticks0;
+  int ticks[4];
+  int wait_ticks[4];
   int wait_ticks3;
   int wait_ticks2;
   int wait_ticks1;
