@@ -21,6 +21,7 @@ main(int argc, char *argv[])
   }
 
   getpinfo(&st);
+  /* printf(1,"MYPID: %d\n",mypid); */
   for (j = 0; j < NPROC; j++) {
     if (st.inuse[j] && st.pid[j] >= 3 && st.pid[j] == mypid) {
       for (l = 3; l >= 0; l--) {
