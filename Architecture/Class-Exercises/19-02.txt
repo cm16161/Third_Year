@@ -1,0 +1,11 @@
+1a) Don't cares means that we can use the same logic for different instructions and don't need to use all the bits for an operation.
+ b) Single cycle speeds are restricted by the critical path of execution and generally have slower speeds than when pipelining is implemented
+ c) MemtoReg and RegDst are inverses of each other, Branch and ALUOp0 can be used as a single signal.
+
+2a) All 0's
+ b) 00012080
+ c) 10
+
+3a) PC, Instruction Memory, Registers, ALU, Data Memory, Control, Mux's
+ b) No new blocks needed
+ c) No new signals needed

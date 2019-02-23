@@ -1,0 +1,14 @@
+1a) For a single instruction pipelining doesn't improve latency but with a large number of instructions it does. This is because processes can start the execution cycle earlier when pipelining is implemented.
+ b) Dependencies for data values means that even with pipelining, sometimes there still needs to be stalls.
+
+2)  Register     Instruction Line#     Type of Dependency         Data Hazard?
+    $s3          L1                    WAR                        No
+    $s3          L2                    RAW                        Yes
+    $s2          L3                    RAW                        Yes
+    $s3          L3                    WAR                        No
+    $s2, $s3     L4                    RAW                        Yes
+
+3)  24 Cycles, Instructions: 3,4,5,6,7,8,9,10 stall
+4a) 5 times speedup
+ b) 20/9 = 2.2x speedup
+ c) Assuming there are no stalls then yes it is faster since each instruction would finish after 4.4ns compared to the 5 stage pipline which would take 5ns.

@@ -1,0 +1,25 @@
+1a) The trend of PC sales is fairly linear between 2007-2012. I think this is because of the increase in sales of tablets and smartphones, due to the fact that they became more readily available and powerful.
+
+ b) I think abstraction is the most important since smaller, more abstract designs can result in hardware being more reusable, thus making computers cheaper and easier to produce.
+
+ ci) DRAM - Volatile, 50ns, DRAM is $5-10 per Gb
+ ii) Flash - Non-Volatile, 100-1000x slower than DRAM, 7-10x cheaper per Gb than DRAM
+
+ iii) Disk Storage - Nonvolatile, 100,000-400,000x slower, 100x cheaper per Gb
+
+d) i, iii, iv
+e) 1000*2*1/10^6 = 2ms
+f) 1/2 cap load * 0.25v^2*frequency = 0.00625 * v * frequency
+   1/2 cap load * v^2 * 1/2 frequency = 0.5 * v * frequency
+   Frequency is a more beneficial optimisation.
+
+2i) i = 1/(1-(8/9) + ((8/9)/6)) = 3.85
+ii) f = 17/18
+    1/(1-(17/18) + ((17/18)/4)) = 3.42 speeding up 6x
+
+3)14+9+20+(14*2.8)+19+24 = 194
+  10+5+40+10+15+20 = 180
+  Therefore not a worthy tradeoff
+
+4a) Increase by 0.029 ns * (number of instructions)
+ b) New SPECratio = 10.9725
