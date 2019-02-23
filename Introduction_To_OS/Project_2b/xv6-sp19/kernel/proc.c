@@ -300,16 +300,8 @@ scheduler(void)
         }
         /* cprintf("PRIORITY : %d\n",p->priority); */
         if((p->priority != priorityLevel) && (p = &ptable.proc[NPROC])){
-          /* p->wait_ticks */
-          /* cprintf("%d %d\n",priorityLevel, p->priority); */
-          /* priorityLevel--; */
           continue;
         }
-        /* else if((p->priority != priorityLevel)){ */
-          /* continue; */
-        /* } */
-        /* else{ */
-        /* } */
         if(p->priority==3){
           p->ticks3  = 0;
           proc = p;
