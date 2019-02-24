@@ -287,22 +287,20 @@ scheduler(void)
     for(int priorityLevel = 3; priorityLevel >=0;priorityLevel--){
       sti();
       acquire(&ptable.lock);
-      int processesNum = 0;
+      int processesNum = -1;
       for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-        /* cprintf("ST.TICKS[0][3]: %d\n",st.ticks[0][3]); */
-        /* st.ticks[processesNum][priorityLevel] = p->ticks[priorityLevel]; */
+        processesNum++;
+        /* cprintf("%d\n",processesNum); */
         st.pid[processesNum] = p->pid;
         st.priority[processesNum] = p->priority;
         st.state[processesNum] = p->state;
-        /* st.ticks[processesNum][priorityLevel] = p->ticks[priorityLevel]; */
-        /* st.wait_ticks[processesNum][priorityLevel] = p->wait_ticks[priorityLevel]; */
         if(p->state != RUNNABLE){
           st.inuse[processesNum] = 0;
-          processesNum++;
+          /* processesNum++; */
           continue;
         }
         if(p->priority != priorityLevel){
-          processesNum++;
+          /* processesNum++; */
           continue;
         }        /* else{ */
         st.inuse[processesNum] = 1;
@@ -325,30 +323,39 @@ scheduler(void)
             q->priority += 1;
           }
         }
+        /* cprintf("PRIORITY: %d\n",p->priority); */
         /* p->ticks[priorityLevel] = 0; */
         if(p->priority==3){
-          proc = p;
+          
           for(int i = 0;i<8;i++){
             if(p->state != RUNNABLE){
               continue;
             }
+            if(p->ticks[3] > 8){
+              continue;
+            }
+            proc = p;
+            cprintf("TEST\n");
             switchuvm(p);
             p->state = RUNNING;
             /* st.inuse[processesNum] = 1; */
             swtch(&cpu->scheduler, proc->context);
             switchkvm();
             p->ticks[3]+= 1;
-            st.ticks[processesNum][3]++;
-          }
-          /* cprintf("p->ticks3 = %d\n",p->ticks[3]); */
-          if(p->ticks[3] == 8){
-            /* st.ticks[processesNum][3] = p->ticks[3]; */
-            p->priority -= 1;
-          }
-          st.wait_ticks[processesNum][3] = p->wait_ticks[3];
-          /* st.ticks[processesNum][3] = p->ticks[3]; */
-          /* cprintf("p-ticks[3]: %d, st.ticks[%d][3]: %d\n",p->ticks[3], processesNum,st.ticks[processesNum][3]); */
+            /* if(p->ticks[3] >= 8){ */
+              /* p->priority -= 1; */
+              /* break; */
+            /* } */
           proc = 0;        
+          }
+          cprintf("p->ticks3 = %d\n",p->ticks[3]);
+          if(p->ticks[3] == 8){
+            p->priority -=1;
+            /* st.ticks[processesNum][3] = p->ticks[3]; */
+          }
+          st.ticks[processesNum][3] = p->ticks[3];
+          st.wait_ticks[processesNum][3] = p->wait_ticks[3];
+          /* cprintf("p-ticks[3]: %d, st.ticks[%d][3]: %d\n",p->ticks[3], processesNum,st.ticks[processesNum][3]); */
         }
         else  if(p->priority == 2){
           /* p->ticks2 = 0; */
@@ -413,29 +420,9 @@ scheduler(void)
             proc = 0;           
             st.ticks[processesNum][0] = p->ticks[0];
           }
-          processesNum++;
+          /* processesNum++; */
         }
       }
-
-    
-
-      /* for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){ */
-      /* if(p->state != RUNNABLE) */
-      /* continue; */
-
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
-      // before jumping back to us.
-      /* proc = p; */
-      /* switchuvm(p); */
-      /* p->state = RUNNING; */
-      /* swtch(&cpu->scheduler, proc->context); */
-      /* switchkvm(); */
-
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
-      /* proc = 0; */
-      /* } */
   
       release(&ptable.lock);
     }      
@@ -450,6 +437,7 @@ int getpinfo(struct pstat *pst){
     pst->priority[i] = st.priority[i];
     pst->state[i] = st.state[i];
     for(int j = 0; j<4;j++){
+      /* cprintf("st.ticks[%d][%d] = %d\n",i,j,st.ticks[i][j]); */
       pst->ticks[i][j] = st.ticks[i][j];
       pst->wait_ticks[i][j] = st.wait_ticks[i][j];
     }

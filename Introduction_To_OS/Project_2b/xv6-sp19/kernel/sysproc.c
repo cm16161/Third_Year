@@ -94,9 +94,9 @@ int
 sys_getpinfo(void)
 {
   struct pstat *pst;
-  /* for(int i = 0; i<NPROC;i++){ */
-    /* cprintf("PINFO PID: %d\n",st.pid[i]); */
-  /* } */
+  for(int i = 0; i<NPROC;i++){
+    /* cprintf("PINFO PID: %d, TICKS[%d][3]: %d\n",st.pid[i],i,st.ticks[i][3]); */
+  }
   if(argptr(0,(void*)&pst , sizeof(*pst)) < 0){
       return -1;
     }
