@@ -94,12 +94,13 @@ int
 sys_getpinfo(void)
 {
   struct pstat *pst;
+  /* for(int i = 0; i<NPROC;i++){ */
+    /* cprintf("PINFO PID: %d\n",st.pid[i]); */
+  /* } */
   if(argptr(0,(void*)&pst , sizeof(*pst)) < 0){
       return -1;
     }
     return getpinfo(pst);
-  /* for(int i = 0; i<NPROC;i++){ */
-  /* cprintf("PINFO PID: %d\n",st.pid[i]);   */
-  /* } */
+  
   return 0;
 }
