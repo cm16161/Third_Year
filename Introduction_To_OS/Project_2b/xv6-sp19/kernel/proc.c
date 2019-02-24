@@ -297,9 +297,32 @@ scheduler(void)
       st.ticks[processesNum][2] = p->ticks2;
       st.ticks[processesNum][1] = p->ticks1;
       st.ticks[processesNum][0] = p->ticks0;
-      st.inuse[processesNum] = 1;
+      if(p->state != UNUSED){
+        st.inuse[processesNum] = 1;
+      }
       if(executed == 1){
         p->wait_ticks[p->priority]+=1;
+        st.ticks[processesNum][3] = p->wait_ticks[3];
+        st.ticks[processesNum][2] = p->wait_ticks[2];
+        st.ticks[processesNum][1] = p->wait_ticks[1];
+        st.ticks[processesNum][0] = p->wait_ticks[0];
+        continue;
+      }
+      if(p->wait_ticks[2] >= 160 && p->priority == 2){
+        p->priority = 3;
+      }
+      if(p->wait_ticks[1] >= 320 && p->priority == 1){
+        p->priority = 2;
+      }
+      if(p->wait_ticks[0] >=500 && p->priority == 0){
+        p->priority = 1;
+      }
+      if(executed == 1){
+        p->wait_ticks[p->priority]+=1;
+        st.ticks[processesNum][3] = p->wait_ticks[3];
+        st.ticks[processesNum][2] = p->wait_ticks[2];
+        st.ticks[processesNum][1] = p->wait_ticks[1];
+        st.ticks[processesNum][0] = p->wait_ticks[0];
         continue;
       }
       if((p->priority == 3)){
@@ -334,10 +357,25 @@ scheduler(void)
         st.ticks[processesNum][2] = p->ticks2;
         st.ticks[processesNum][1] = p->ticks1;
         st.ticks[processesNum][0] = p->ticks0;
-        st.inuse[processesNum] = 1;
+        if(p->state != UNUSED){
+          st.inuse[processesNum] = 1;
+        }
         if(executed == 1){
           p->wait_ticks[p->priority]+=1;
+          st.ticks[processesNum][3] = p->wait_ticks[3];
+          st.ticks[processesNum][2] = p->wait_ticks[2];
+          st.ticks[processesNum][1] = p->wait_ticks[1];
+          st.ticks[processesNum][0] = p->wait_ticks[0];
           continue;
+        }
+        if(p->wait_ticks[2] >= 160 && p->priority == 2){
+          p->priority = 3;
+        }
+        if(p->wait_ticks[1] >= 320 && p->priority == 1){
+          p->priority = 2;
+        }
+        if(p->wait_ticks[0] >=500 && p->priority == 0){
+          p->priority = 1;
         }
         if((p->priority == 2)){
           if(p->state != RUNNABLE){
@@ -372,10 +410,25 @@ scheduler(void)
         st.ticks[processesNum][2] = p->ticks2;
         st.ticks[processesNum][1] = p->ticks1;
         st.ticks[processesNum][0] = p->ticks0;
-        st.inuse[processesNum] = 1;
+        if(p->state != UNUSED){
+          st.inuse[processesNum] = 1;
+        }
         if(executed == 1){
           p->wait_ticks[p->priority]+=1;
+          st.ticks[processesNum][3] = p->wait_ticks[3];
+          st.ticks[processesNum][2] = p->wait_ticks[2];
+          st.ticks[processesNum][1] = p->wait_ticks[1];
+          st.ticks[processesNum][0] = p->wait_ticks[0];
           continue;
+        }
+        if(p->wait_ticks[2] >= 160 && p->priority == 2){
+          p->priority = 3;
+        }
+        if(p->wait_ticks[1] >= 320 && p->priority == 1){
+          p->priority = 2;
+        }
+        if(p->wait_ticks[0] >=500 && p->priority == 0){
+          p->priority = 1;
         }
         if((p->priority == 1)){
           if(p->state != RUNNABLE){
@@ -385,12 +438,10 @@ scheduler(void)
           p->priority -=1;
           break;
           }
-          /* executed = 1; */
           p->ticks1 += 1;
           proc = p;
           switchuvm(p);
           p->state = RUNNING;
-          /* st.pid[0] = p->pid; */
           swtch(&cpu->scheduler, proc->context);
           switchkvm();
           
@@ -410,10 +461,25 @@ scheduler(void)
         st.ticks[processesNum][2] = p->ticks2;
         st.ticks[processesNum][1] = p->ticks1;
         st.ticks[processesNum][0] = p->ticks0;
-        st.inuse[processesNum] = 1;
+        if(p->state != UNUSED){
+          st.inuse[processesNum] = 1;
+        }
         if(executed == 1){
           p->wait_ticks[p->priority]+=1;
+          st.ticks[processesNum][3] = p->wait_ticks[3];
+          st.ticks[processesNum][2] = p->wait_ticks[2];
+          st.ticks[processesNum][1] = p->wait_ticks[1];
+          st.ticks[processesNum][0] = p->wait_ticks[0];
           continue;
+        }
+        if(p->wait_ticks[2] >= 160 && p->priority == 2){
+          p->priority = 3;
+        }
+        if(p->wait_ticks[1] >= 320 && p->priority == 1){
+          p->priority = 2;
+        }
+        if(p->wait_ticks[0] >=500 && p->priority == 0){
+          p->priority = 1;
         }
         if((p->priority == 0)){
           if(p->state != RUNNABLE){
