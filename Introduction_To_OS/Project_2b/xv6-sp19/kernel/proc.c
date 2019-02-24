@@ -280,110 +280,106 @@ scheduler(void)
       st.wait_ticks[i][j] = 0;
     }
   }
-  int executed;
+  int executed;//, topPriority;
   /* int threeHead,twoHead, oneHead, zeroHead, processIndex; */
   for(;;){
     // Enable interrupts on this processor.
     sti();
     executed = 0;
-    /* threeHead = 0; */
-    /* twoHead = 0; */
-    /* oneHead = 0; */
-    /* zeroHead = 0; */
-    /* processIndex = 0; */
-    // Loop over process table looking for process to run.
+    
     acquire(&ptable.lock);
-    while(!executed){
-      int processesNum = -1;
-      for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-        processesNum++;
-        st.pid[processesNum] = p->pid;
-        st.priority[processesNum] = p->priority;
-        st.state[processesNum] = p->state;
-        st.ticks[processesNum][2] = p->ticks2;
-        st.ticks[processesNum][1] = p->ticks1;
-        st.ticks[processesNum][0] = p->ticks0;
-        st.inuse[processesNum] = 1;
-        if(executed == 1){
-          p->wait_ticks[p->priority]+=1;
+    int processesNum = -1;
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      processesNum++;
+      st.pid[processesNum] = p->pid;
+      st.priority[processesNum] = p->priority;
+      st.state[processesNum] = p->state;
+      st.ticks[processesNum][2] = p->ticks2;
+      st.ticks[processesNum][1] = p->ticks1;
+      st.ticks[processesNum][0] = p->ticks0;
+      st.inuse[processesNum] = 1;
+      if(executed == 1){
+        p->wait_ticks[p->priority]+=1;
+        continue;
+      }
+      if((p->priority == 3)){
+        if(p->state != RUNNABLE){
           continue;
         }
-        if((p->priority == 3)){
-          if(p->state != RUNNABLE){
-            continue;
-          }
-          if(p->ticks3 == 8){
-            p->priority -=1;
-            break;
-          }
-          executed = 1;
-          p->ticks3 += 1;
-          proc = p;
-          switchuvm(p);
-          p->state = RUNNING;
-          /* st.pid[0] = p->pid; */
-          swtch(&cpu->scheduler, proc->context);
-          switchkvm();
-        
-          st.ticks[processesNum][3] = p->ticks3;
-          proc = 0;
+        if(p->ticks3 == 8){
+          p->priority -=1;
+          break;
         }
-        if((p->priority == 2)){
-          if(p->state != RUNNABLE){
-            continue;
-          }
-          if(p->ticks2 == 16){
-            p->priority -=1;
-            break;
-          }
-          executed = 1;
-          p->ticks2 += 1;
-          proc = p;
-          switchuvm(p);
-          p->state = RUNNING;
-          /* st.pid[0] = p->pid; */
-          swtch(&cpu->scheduler, proc->context);
-          switchkvm();
+        executed = 1;
+        p->ticks3 += 1;
+        proc = p;
+        switchuvm(p);
+        p->state = RUNNING;
+        /* st.pid[0] = p->pid; */
+        swtch(&cpu->scheduler, proc->context);
+        switchkvm();
         
-          proc = 0;
+        st.ticks[processesNum][3] = p->ticks3;
+        proc = 0;
+      }
+      if((p->priority == 2)){
+        if(p->state != RUNNABLE){
+          continue;
         }
-        if((p->priority == 1)){
-          if(p->state != RUNNABLE){
-            continue;
-          }
-          if(p->ticks1 == 32){
-            p->priority -=1;
-            break;
-          }
-          executed = 1;
-          p->ticks1 += 1;
-          proc = p;
-          switchuvm(p);
-          p->state = RUNNING;
-          /* st.pid[0] = p->pid; */
-          swtch(&cpu->scheduler, proc->context);
-          switchkvm();
+        if(p->ticks2 == 16){
+          p->priority -=1;
+          break;
+        }
+        executed = 1;
+        p->ticks2 += 1;
+        proc = p;
+        switchuvm(p);
+        p->state = RUNNING;
+        /* st.pid[0] = p->pid; */
+        swtch(&cpu->scheduler, proc->context);
+        switchkvm();
         
-          proc = 0;
+        proc = 0;
+      }
+      if((p->priority == 1)){
+        if(p->state != RUNNABLE){
+          continue;
         }
-        if((p->priority == 0)){
-          if(p->state != RUNNABLE){
-            continue;
-          }
-          executed = 1;
-          p->ticks0 += 1;
-          proc = p;
-          switchuvm(p);
-          p->state = RUNNING;
-          /* st.pid[0] = p->pid; */
-          swtch(&cpu->scheduler, proc->context);
-          switchkvm();
+        if(p->ticks1 == 32){
+          p->priority -=1;
+          break;
+        }
+        executed = 1;
+        p->ticks1 += 1;
+        proc = p;
+        switchuvm(p);
+        p->state = RUNNING;
+        /* st.pid[0] = p->pid; */
+        swtch(&cpu->scheduler, proc->context);
+        switchkvm();
         
-          proc = 0;
+        proc = 0;
+      }
+      if((p->priority == 0)){
+        if(p->state != RUNNABLE){
+          continue;
         }
-      }      
+        executed = 1;
+        p->ticks0 += 1;
+        proc = p;
+        switchuvm(p);
+        p->state = RUNNING;
+        /* st.pid[0] = p->pid; */
+        swtch(&cpu->scheduler, proc->context);
+        switchkvm();
+        
+        proc = 0;
+      }
+      /* if(executed == 0){ */
+        /* topPriority -=1; */
+        /* cprintf("executed: %d\n",topPriority); */
+      /* } */
     }
-    
     release(&ptable.lock);
   }
 }
