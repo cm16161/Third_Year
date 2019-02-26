@@ -1,0 +1,31 @@
+1) #2, #4 are correct
+   #4 helps because: by having more pipe-stages, the cycles are shorter which means we can operate more cycles per second, more pipe-stages increase the possibility of forwarding which would potentially allow more instructions to be executed with less delays/stalls
+
+2) Instr/Cycle	          1	2      3    4		 5      6	7	8	9  	10     11      	12 	13	14	15
+   sub $s4, $s2, $s3	  F	D      E    M		 W
+   sw  $s2, 8($s1)	  	F      D    E		 M	W
+   lw  $s2, 0($s4)		       F    D		 E	M	W
+   lw  $s5, 4($s2)		       	    F		 D	D*	E	M	W
+   add $s1, $zero, $s5			    		 F	F*	D	D*	E	M	W
+   lw  $s3, 0($s3) 					 	*	F	F*	D	E	M	W
+   sw  $s3, 0($s1)							*	*	F	D	D*	E	M	W
+   add $s2, $s1, $s2								*	*	F	F*	D	E	M	W
+
+3a)    ID/EX-RS	 $s1
+       ID/EX-RT	 $s4
+       EX/MEM-RD $s1
+       EX/MEM-RT $s3
+       MEM/WB-RD $s1
+
+3b)    EX/MEM-RD == ID/EX-RS
+       EX/MEM-RegWrite == 1
+
+4a)    Line 4: RAW:- R3
+       	       	   - R4
+       Line 5: RAW:- R5
+       	       WAR:- R3
+
+4b)    Only the RAW dependencies cause stalls, these are R3 and R4 on Line 4, and R5 on Line 5
+       It will take 17 cycles to complete
+4c)    None of the previous hazards cause stalls due to EX-EX forwarding, this means that it takes 12 cycles to complete
+4d)    Schedule the instructions so that there is as little delay to the Branch instruction as possible so that it can be executed and resolved quickly resulting in as little stalls as possible.
