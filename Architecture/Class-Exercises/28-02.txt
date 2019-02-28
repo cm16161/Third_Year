@@ -1,0 +1,32 @@
+1)  Taken = 95%
+    Not-Taken = 95%
+    Dynamic = 90%
+
+2a) Instr / Cycle 0   1   2   3   4   5   6   7   8   9   10  11  12  13  14
+or $s3, $s1, $s0  F   D*  D   X   M   W
+lw $s4, 64($s3)       F   F*  D   X   M   W
+lw $s3, 0($s2)            *   F   D   X   M   W
+ori $s4, $s3, 4               *   F   D   D*  X   M   W
+
+b) EX/MEM-RD == ID/EX-RT
+   WriteEnable == 1
+
+   MEM/WRITE-RD == ID/EX-RT
+   WriteEnable == 1
+
+   MEM/WRITE-RS == ID/EX-RS
+   WriteEnable == 1
+
+3a)  Instr / Cycle 0   1   2   3   4   5   6   7   8   9   10  11  12  13  14   15  16
+     L1            F   D   X   M   W
+     L2                F   D   X   M   W
+     L3                    F   D*  D*  D   X   M   W
+     L4                        F   F*  F*  =   =   =   =
+     L1                                    F   D   X   M   W
+     L2                                        F   D   X   M   W
+     L3                                            F   D*  D*  D
+     L4                                                F   F*  F*  D   X   M    W
+
+b) RAW L2: $t1 Data Hazard, Doesn't requrire stall EX-EX forwarding 
+   RAW L2: $t1 Data Hazard, 1 decode stall EX-ID forwarding
+   WAR L1: $t1 Data Hazard, no stall
