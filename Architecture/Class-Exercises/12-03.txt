@@ -1,0 +1,15 @@
+1.a)  2 or 3 can be recognised first if the CPU is pipelined
+b)    Those are the values of previous instructions currently being executed, they shouldn't be affected by an execption of the following instruction.
+c)    0x44
+
+2)    Instruction   Can be Moved?   Wasted Work on Branch   Wasted Work on Fall-Through
+      addi          No              N/A                     N/A
+      and           Yes             No                      No 
+      slt           No              N/A                     N/A
+      or            Yes             Yes                     No
+      add           No              N/A                     N/A
+      slt           Yes             No                      No  
+      and           No              N/A                     N/A
+
+3)    Machine 1: 25% * 20% * 1 flushed instruciton = 5% wasted
+      Machine 2: 25% * 20% *2 flushed instructions = 10% wasted

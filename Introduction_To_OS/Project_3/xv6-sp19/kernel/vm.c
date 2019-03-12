@@ -123,11 +123,12 @@ static struct kmap {
   void *p;
   void *e;
   int perm;
+  //{(void*)0x0,        (void*)0x4000,   PTE_W | PTE_U},  // Shared Memory  
 } kmap[] = {
-  {(void*)USERTOP,    (void*)0x100000, PTE_W},  // I/O space
-  {(void*)0x100000,   data,            0    },  // kernel text, rodata
-  {data,              (void*)PHYSTOP,  PTE_W},  // kernel data, memory
-  {(void*)0xFE000000, 0,               PTE_W},  // device mappings
+  {(void*)USERTOP,    (void*)0x100000, PTE_W},          // I/O space
+  {(void*)0x100000,   data,            0    },          // kernel text, rodata
+  {data,              (void*)PHYSTOP,  PTE_W},          // kernel data, memory
+  {(void*)0xFE000000, 0,               PTE_W},          // device mappings
 };
 
 // Set up kernel part of a page table.
@@ -195,8 +196,9 @@ inituvm(pde_t *pgdir, char *init, uint sz)
     panic("inituvm: more than a page");
   mem = kalloc();
   memset(mem, 0, PGSIZE);
-  mappages(pgdir, 0, PGSIZE, PADDR(mem), PTE_W|PTE_U);
+  mappages(pgdir, (void*) 0 + RESSHMEM, PGSIZE, PADDR(mem), PTE_W|PTE_U);
   memmove(mem, init, sz);
+  //allocusvm(pgdir, USERTOP, USERTOP - 5*PGSIZE, PGSIZE);
 }
 
 // Load a program segment into pgdir.  addr must be page-aligned
@@ -206,6 +208,9 @@ loaduvm(pde_t *pgdir, char *addr, struct inode *ip, uint offset, uint sz)
 {
   uint i, pa, n;
   pte_t *pte;
+  
+  if ((uint) addr < RESSHMEM)
+    panic("loaduvm: loading segment into shmem");
 
   if((uint)addr % PGSIZE != 0)
     panic("loaduvm: addr must be page aligned");
@@ -236,8 +241,8 @@ allocuvm(pde_t *pgdir, uint oldsz, uint newsz)
   if(newsz < oldsz)
     return oldsz;
 
-  a = PGROUNDUP(oldsz);
-  for(; a < newsz; a += PGSIZE){
+  a = PGROUNDUP(oldsz) + RESSHMEM;
+  for(; a < (newsz + RESSHMEM); a += PGSIZE){
     mem = kalloc();
     if(mem == 0){
       cprintf("allocuvm out of memory\n");
@@ -255,6 +260,62 @@ allocuvm(pde_t *pgdir, uint oldsz, uint newsz)
 // need to be less than oldsz.  oldsz can be larger than the actual
 // process size.  Returns the new process size.
 int
+deallocsuvm(pde_t *pgdir, uint oldstsz, uint newstsz, uint sz)
+{
+  pte_t *pte;
+  uint a, pa;
+
+  if(newstsz >= oldstsz)
+    return oldstsz;
+
+  a = PGROUNDUP(oldstsz);
+  for(; a  < newstsz; a += PGSIZE){
+    pte = walkpgdir(pgdir, (char*)a, 0);
+    if(pte && (*pte & PTE_P) != 0){
+      pa = PTE_ADDR(*pte);
+      if(pa == 0)
+        panic("kfree");
+      kfree((char*)pa);
+      *pte = 0;
+    }
+  }
+  return newstsz;
+}
+
+
+// Allocate page tables and physical memory to grow process from oldsz to
+// newsz, which need not be page aligned.  Returns new size or 0 on error.
+int
+allocusvm(pde_t *pgdir, uint oldstsz, uint newstsz, uint sz)
+{
+  char *mem;
+  uint a;
+
+  if(newstsz > USERTOP)
+    return 0;
+  if(newstsz > oldstsz)
+    return oldstsz;
+
+  a = (uint) PGROUNDDOWN(newstsz);
+  for(; a < oldstsz; a += PGSIZE){
+    mem = kalloc();
+    if(mem == 0){
+      cprintf("allocsuvm out of memory\n");
+      deallocsuvm(pgdir, newstsz, oldstsz, sz);
+      return 0;
+    }
+    memset(mem, 0, PGSIZE);
+    mappages(pgdir, (char*)a, PGSIZE, PADDR(mem), PTE_W|PTE_U);
+  }
+  return newstsz;
+}
+
+
+// Deallocate user pages to bring the process size from oldsz to
+// newsz.  oldsz and newsz need not be page-aligned, nor does newsz
+// need to be less than oldsz.  oldsz can be larger than the actual
+// process size.  Returns the new process size.
+int
 deallocuvm(pde_t *pgdir, uint oldsz, uint newsz)
 {
   pte_t *pte;
@@ -262,9 +323,23 @@ deallocuvm(pde_t *pgdir, uint oldsz, uint newsz)
 
   if(newsz >= oldsz)
     return oldsz;
+  
+  if (oldsz == USERTOP && newsz == 0) {
+    a = RESSHMEM - PGSIZE;
+    do {
+      a += PGSIZE;
+      pte = walkpgdir(pgdir, (char*) a, 0);
+      if (pte != 0) {
+	pa = PTE_ADDR(*pte);
+	if (pa != 0)
+	  kfree((char*)pa);
+      }
+    } while (a + PGSIZE < USERTOP);
+    return newsz;
+  }
 
-  a = PGROUNDUP(newsz);
-  for(; a  < oldsz; a += PGSIZE){
+  a = RESSHMEM + PGROUNDUP(newsz);
+  for(; a  < (RESSHMEM + oldsz); a += PGSIZE){
     pte = walkpgdir(pgdir, (char*)a, 0);
     if(pte && (*pte & PTE_P) != 0){
       pa = PTE_ADDR(*pte);
@@ -297,7 +372,7 @@ freevm(pde_t *pgdir)
 // Given a parent process's page table, create a copy
 // of it for a child.
 pde_t*
-copyuvm(pde_t *pgdir, uint sz)
+copyuvm(pde_t *pgdir, uint sz, uint stsz)
 {
   pde_t *d;
   pte_t *pte;
@@ -306,11 +381,23 @@ copyuvm(pde_t *pgdir, uint sz)
 
   if((d = setupkvm()) == 0)
     return 0;
-  for(i = 0; i < sz; i += PGSIZE){
+  for(i = RESSHMEM; i < sz; i += PGSIZE){
     if((pte = walkpgdir(pgdir, (void*)i, 0)) == 0)
       panic("copyuvm: pte should exist");
     if(!(*pte & PTE_P))
       panic("copyuvm: page not present");
+    pa = PTE_ADDR(*pte);
+    if((mem = kalloc()) == 0)
+      goto bad;
+    memmove(mem, (char*)pa, PGSIZE);
+    if(mappages(d, (void*)i, PGSIZE, PADDR(mem), PTE_W|PTE_U) < 0)
+      goto bad;
+  }
+  for(i = stsz; i < USERTOP; i += PGSIZE){
+    if((pte = walkpgdir(pgdir, (void*)i, 0)) == 0)
+      panic("copyuvm: stack: pte should exist");
+    if(!(*pte & PTE_P))
+      panic("copyuvm: stack: page not present");
     pa = PTE_ADDR(*pte);
     if((mem = kalloc()) == 0)
       goto bad;

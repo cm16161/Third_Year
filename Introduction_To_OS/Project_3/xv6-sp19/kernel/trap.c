@@ -83,7 +83,19 @@ trap(struct trapframe *tf)
               tf->trapno, cpu->id, tf->eip, rcr2());
       panic("trap");
     }
-    // In user space, assume process misbehaved.
+    // In user space.
+    // Check if page fault within a page of stsz
+    if ((rcr2() > (proc->stsz - PGSIZE)) && (rcr2() < proc->stsz)) {
+      // it is, grow the stack by a page and break
+      if ((proc->stsz = allocusvm(proc->pgdir, 
+				  proc->stsz, 
+				  (proc->stsz - PGSIZE), 
+				  proc->sz)) != 0)
+	break;
+      // allocusvm failed, falling through to panic.
+    }
+    
+    // Stack expansion not a reasonable assumption, process misbehaved.
     cprintf("pid %d %s: trap %d err %d on cpu %d "
             "eip 0x%x addr 0x%x--kill proc\n",
             proc->pid, proc->name, tf->trapno, tf->err, cpu->id, tf->eip, 

@@ -42,7 +42,7 @@ ASFLAGS += -ggdb # produce debugging information for use by gdb
 
 # Linker options
 # http://sourceware.org/binutils/docs/ld/Options.html
-LD := ld
+LD := ld.bfd
 
 OBJCOPY := objcopy
 
@@ -53,7 +53,7 @@ OBJDUMP := objdump
 ################################################################################
 
 # If the makefile can't find QEMU, specify its path here
-#QEMU :=
+QEMU := /usr/bin/qemu-system-x86_64
 
 # Try to infer the correct QEMU if not specified
 ifndef QEMU

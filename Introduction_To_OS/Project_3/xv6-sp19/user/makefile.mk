@@ -10,6 +10,8 @@ USER_PROGS := \
 	ln\
 	ls\
 	mkdir\
+	null\
+	malloctildeath\
 	rm\
 	sh\
 	stressfs\
@@ -61,7 +63,7 @@ USER_CFLAGS += -m32
 USER_ASFLAGS := $(USER_CFLAGS)
 
 # FreeBSD ld wants ``elf_i386_fbsd''
-USER_LDFLAGS += -m $(shell $(LD) -V | grep elf_i386 2>/dev/null)
+USER_LDFLAGS += -m elf_i386
 
 # do not link with the host standard library files
 USER_LDFLAGS += -nostdlib
@@ -73,7 +75,7 @@ USER_LDFLAGS += --omagic
 USER_LDFLAGS += --entry=main
 
 # location in memory where the program will be loaded
-USER_LDFLAGS += --section-start=.text=0x0
+USER_LDFLAGS += --section-start=.text=0x4000
 
 user/bin:
 	mkdir -p user/bin

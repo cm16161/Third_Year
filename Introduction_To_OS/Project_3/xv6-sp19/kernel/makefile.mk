@@ -81,7 +81,7 @@ KERNEL_CFLAGS += -m32
 KERNEL_ASFLAGS += $(KERNEL_CFLAGS)
 
 # FreeBSD ld wants ``elf_i386_fbsd''
-KERNEL_LDFLAGS += -m $(shell $(LD) -V | grep elf_i386 2>/dev/null)
+KERNEL_LDFLAGS += -m elf_i386
 # do not link with the host standard library files
 KERNEL_LDFLAGS += -nostdlib
 # use simple contiguous section layout and do not use dynamic linking
@@ -120,7 +120,7 @@ bootother: kernel/bootother.o
 
 initcode: kernel/initcode.o
 	$(LD) $(LDFLAGS) $(KERNEL_LDFLAGS) \
-		--entry=start --section-start=.text=0x0 \
+		--entry=start --section-start=.text=0x4000 \
 		--output=kernel/initcode.out kernel/initcode.o
 	$(OBJCOPY) -S -O binary kernel/initcode.out $@
 
