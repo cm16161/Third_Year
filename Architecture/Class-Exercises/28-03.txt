@@ -1,0 +1,15 @@
+1)  Page Offset = 12 bits
+    Virtual Page Number = 52 bits
+    Physical Page Number = 35 bits
+
+2)  1 + 5%*100 = 6 cycles
+    100/6 = 16.7x faster
+
+3)  Total TLB Accesses: 16384*3 = 49152
+    Total TLB Misses: 6
+    Total Page Table Accesses: 6
+    Total Page Faults: 6
+
+4)  Heap Segment Occupies in 1st : 2
+    Heap Segment Occupies in 2nd : 19
+    Heap Segment Occupies in 3rd : 9766
