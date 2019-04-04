@@ -1,0 +1,12 @@
+1a) 100%*2 + 101%*10  = 12.1 Cycles
+ b) 2 + 1+ 0.1%*10 + 1%*10 = 3.11 Cycles  
+
+2)  C2 is wrong, original data is: 1011
+
+3   Page Size   Capacity    Associativity   Block Size    Problem?
+  a 64KB        256KB       8-Way           32B           No (10+5 < 16)           
+  b 32KB        256KB       8-Way           32B           No (10+5 <= 15)
+  c 64KB        1MB         8-Way           32B           Yes (12+5 > 16)
+  d 64KB        256KB       2-Way           32B           Yes (12+5 > 16)
+  e 64KB        256KB       8-Way           8B            No (12+3 < 16)
+

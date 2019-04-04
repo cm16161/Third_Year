@@ -1,0 +1,46 @@
+1)  Branch Prediction: hardware
+    Multiple Issue: hardware
+    VLIW: software
+    Superscalar: hardware
+    Dynamic Scheduling: hardware
+    Out-of-order execution: hardware
+    Speculation: hardware
+    Reorder Buffer: hardware
+    Register Renaming: both
+
+    Software is by nature sequential, so it is down to the hardware to make it parallisable.
+
+2a) lw  $t0, 0($s2)
+    and $s2, $t0, $t1
+    //  lw  $t0, 0($t0) //
+    sub $t2, $s0, $s2
+    sub $t0, $t0, $t2
+    lw  $t2, 8($s0)
+    or  $s1, $t2, $t0
+    lw  $t2, 0($t0)
+    add $t1, $t2, $s1
+
+    9 inst + 4 fill + 3 stall = 16 cycles
+
+2b) lw  P7, 0(P6)
+    and P8, P7, P2
+    sub P9, P4, P8
+    lw  P10, 4(P7)
+    sub P11, P7, P9
+    lw  P12, 8(P4)
+    or  P13, P12, P11
+    lw  P14, 0(P11)
+    add P15, P14, P13
+
+2c) lw  P7, 0(P6)
+    lw  P12, 8(P4)
+    lw  P10, 4(P7)
+    and P8, P7, P2
+    sub P9, P4, P8
+    sub P11, P7, P9
+    lw  P14, 0(P11)
+    or  P13, P12, P11
+    add P15, P14, P13
+
+    9 inst + 4 fill = 13 cycles
+    
