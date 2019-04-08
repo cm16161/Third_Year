@@ -82,9 +82,18 @@ int
 sys_uptime(void)
 {
   uint xticks;
-  
   acquire(&tickslock);
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+int
+sys_clone(void)
+{
+  void *fcn, *arg1, *arg2;
+  argptr(0, (void *)&fcn, sizeof(*fcn));
+  argptr(1, (void *)&arg1, sizeof(*arg1));
+  argptr(2, (void *)&arg2, sizeof(*arg2));
+  return clone( fcn, arg1, arg2, (void *) "f");
 }

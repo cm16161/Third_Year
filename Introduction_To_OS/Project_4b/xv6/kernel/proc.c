@@ -443,4 +443,7 @@ procdump(void)
   }
 }
 
-
+int clone(void (*fnc) (void*, void *), void *arg1, void *arg2, void *stack){
+  cprintf("ARG1: %s\nARG2: %s \n", (char *)arg1,(char *)arg2);;
+  return 0;
+}
