@@ -444,6 +444,20 @@ procdump(void)
 }
 
 int clone(void (*fnc) (void*, void *), void *arg1, void *arg2, void *stack){
-  cprintf("ARG1: %s\nARG2: %s \n", (char *)arg1,(char *)arg2);;
+  //int i, pid;
+  struct proc *np;
+  if((np = allocproc()) == 0)
+    return -1;
+  np->sz = proc->sz;
+  np->parent = proc;
+  *np->tf = *proc->tf;
+  np->pgdir = proc->pgdir;
+  np->tf->eax = 0;
+  np->tf->esp = (uint) arg2;
+  np->tf->esp -= 4;
+  np->tf->esp = (uint) arg1;
+  np->tf->ebp =(uint) &fnc;
+
+  cprintf("ARG1: %s\nARG2: %s \n", (char *)arg1,(char *)arg2);
   return 0;
 }

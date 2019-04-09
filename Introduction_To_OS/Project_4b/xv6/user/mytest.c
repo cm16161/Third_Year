@@ -12,6 +12,6 @@ int a(void *b, void *c){
 int
 main(int argc, char *argv[])
 {
-  clone((void*)a  ((void*) "boob", (void*) "chet"), (void *) "deal", (void*)"extra", (void*)"follow");
+  clone((void *) a, (void *) "deal", (void*)"extra", (void*)"follow");
   exit();
 }
