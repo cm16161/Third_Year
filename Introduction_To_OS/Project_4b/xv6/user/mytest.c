@@ -1,17 +1,25 @@
 #include "types.h"
 #include "stat.h"
 #include "user.h"
+#define PGSIZE 4096
 
-int a(void *b, void *c){
-  (void) b;
-  (void) c;
-  printf(1,"USER: IN RANDOM FUNCTION a()\n");
-  return 0;
+void a(void *b, void *c){
+  printf(1,"TESTESTSET\n");
+  printf(1,"USER: IN RANDOM FUNCTION a()\nb:%s\nc:%s\n",(char *) b, (char *)c);
+  //exit();
 }
 
 int
 main(int argc, char *argv[])
 {
-  clone((void *) a, (void *) "deal", (void*)"extra", (void*)"follow");
+  void *stack = malloc(sizeof(uint)*PGSIZE);
+  int pid = clone(&a, NULL, NULL, stack);
+  //a(NULL,NULL);
+  if(pid == 0){
+    printf(1,"something....\n");
+  }
+  else{
+    printf(1,"something else....\n");
+  }
   exit();
 }

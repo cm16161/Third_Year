@@ -444,7 +444,8 @@ procdump(void)
 }
 
 int clone(void (*fnc) (void*, void *), void *arg1, void *arg2, void *stack){
-  //int i, pid;
+  //int i,
+  int pid;
   struct proc *np;
   if((np = allocproc()) == 0)
     return -1;
@@ -453,11 +454,32 @@ int clone(void (*fnc) (void*, void *), void *arg1, void *arg2, void *stack){
   *np->tf = *proc->tf;
   np->pgdir = proc->pgdir;
   np->tf->eax = 0;
-  np->tf->esp = (uint) arg2;
-  np->tf->esp -= 4;
-  np->tf->esp = (uint) arg1;
-  np->tf->ebp =(uint) &fnc;
-
-  cprintf("ARG1: %s\nARG2: %s \n", (char *)arg1,(char *)arg2);
-  return 0;
+  //cprintf("values of arg1:%s, arg2:%s\n",(char *) arg1, (char *) arg2);
+  uint* stack_int = (uint *) stack;
+  //cprintf("%d\n",sizeof(*stack));
+  uint userStackPointer = PGSIZE-1;
+  stack_int[userStackPointer] = (uint)&arg2;
+  np->tf->esp = stack_int[userStackPointer];
+  userStackPointer -= 0x4;
+  //np->tf->esp -= 0x4;
+  stack_int[userStackPointer] = (uint)&arg1;
+  userStackPointer -= 0x4;
+  stack_int[userStackPointer] = 0xffffffff;
+  userStackPointer -= 0x4;
+  np->tf->eip = userStackPointer;
+  // stack_int[userStackPointer] = (uint) &fnc;
+  np->tf->ebp = userStackPointer;
+  userStackPointer -= 0x4;
+  userStackPointer -= 0x20;
+  stack_int[userStackPointer+0x4] = stack_int[np->tf->ebp+0x8];
+  stack_int[userStackPointer] = stack_int[np->tf->ebp+0x4];
+  np->tf->esp = userStackPointer;
+  //stack_int[userStackPointer]= (uint) &fnc;
+  //np->tf->ebp =stack_int[userStackPointer];
+  //userStackPointer -= 0x4;
+  pid = np->pid;
+  np->state = RUNNABLE;
+  //np->tf->eax = np->tf->ebp;
+  //fnc(NULL,NULL);
+  return pid;
 }

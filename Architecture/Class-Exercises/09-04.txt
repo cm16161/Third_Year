@@ -1,0 +1,47 @@
+1)  Due to being able to issue and execute multiple instructions at the same time
+    It becomes possible that 2 different virtual addresses try to access the same
+    physical location. 
+
+
+2)  Instruction        1   2   3   4   5   6   7   8   9
+    lw  $t0, 0($s2)    F   De  Di  S   X   X   X   X   X  
+    and $s2, $t2, $t1      F   De  Di  S   X   C   R*  R  
+    or  $s1, $s1, $t2          F   De  Di  S   X   C   R  
+    sub $t2, $s0, $s2              F   De  Di  S   X   C  
+    lw  $t0, 4($t0)                    F   De  Di  S*  S
+    lw  $s2, 0($s1)                        F   De  Di* Di
+    sub $t0, $t1, $s1                          F   De* De
+    or  $s1, $t2, $t0                              F*  F
+    lw  $t2, 0($t0)                                    *
+    add $t1, $t2, $s1                                    
+
+
+    Reservation Stations and Functional Units
+    Functional Unit      Instruction        Physical Reg  Ready   Physical Reg  Ready
+    add/sub              
+    and                  
+    or                   
+    lw                   lw  $t0, 4($t0)    P7             N       P11           Y
+    sw
+
+
+    Map Table
+    Architectural Reg     Physical Reg      Ready
+    $t0                   P11               N
+    $t1                   P2                Y
+    $t2                   P10               N
+    $s0                   P4                Y
+    $s1                   P9                Y
+    $s2                   P7                Y
+
+    Free List: P12
+
+    
+
+    Reorder Buffer
+    Instruction           Dest Physical Reg     Old Physical Reg
+    lw  $t0, 0($s2)       P7                    P1
+    and $s2, $t2, $t1     P8                    P6
+    or  $s1, $s1, $t2     P9                    P5
+    sub $t2, $s0, $s2     P10                   P3
+    lw  $t0, 4($t0)       P11                   P7
