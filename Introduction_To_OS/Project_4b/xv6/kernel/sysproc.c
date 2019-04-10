@@ -96,6 +96,5 @@ sys_clone(void)
   argptr(1, (void *)&arg1, sizeof(*arg1));
   argptr(2, (void *)&arg2, sizeof(*arg2));
   argptr(3, (void *)&stack, sizeof(*stack));
-  fcn(NULL,NULL);
   return clone(fcn, arg1, arg2, stack);
 }

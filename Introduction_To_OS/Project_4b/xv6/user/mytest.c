@@ -14,6 +14,7 @@ main(int argc, char *argv[])
 {
   void *stack = malloc(sizeof(uint)*PGSIZE);
   int pid = clone(&a, NULL, NULL, stack);
+  //int pid = fork();
   //a(NULL,NULL);
   if(pid == 0){
     printf(1,"something....\n");
