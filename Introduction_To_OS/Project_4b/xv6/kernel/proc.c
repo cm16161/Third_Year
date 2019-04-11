@@ -301,11 +301,11 @@ sched(void)
   if(readeflags()&FL_IF)
     panic("sched interruptible");
   intena = cpu->intena;
-  if(proc->pid > 3){
-    cprintf("PID TO RUN:%d \n",proc->pid);
-    cprintf("PID CONTEXT EIP:%x\n",proc->context->eip);
-    cprintf("PID TF EIP:%x\n",proc->tf->eip);
-  }
+  /* if(proc->pid > 3){ */
+  /*   cprintf("PID TO RUN:%d \n",proc->pid); */
+  /*   cprintf("PID CONTEXT EIP:%x\n",proc->context->eip); */
+  /*   cprintf("PID TF EIP:%x\n",proc->tf->eip); */
+  /* } */
 
   swtch(&proc->context, cpu->scheduler);
   cpu->intena = intena;
@@ -450,74 +450,66 @@ procdump(void)
 }
 
 int clone(void (*fnc) (void*, void *), void *arg1, void *arg2, void *stack){
-
-  /////////////////////////
-  //////// FORK COPY //////
-  /////////////////////////
-
   int pid;
   struct proc *np;
+
+  // Allocate process.
   if((np = allocproc()) == 0)
     return -1;
 
-  if((np->pgdir = copyuvm(proc->pgdir, proc->sz)) == 0){
-    kfree(np->kstack);
-    np->kstack = 0;
-    np->state = UNUSED;
-    return -1;
-  }
+  //////////////////////////////////////////
 
-  //np->pgdir = proc->pgdir;
+
+  
+  //////////////////////////////////////////
+
+
+  // Copy process state from p.
+  /* if((np->pgdir = copyuvm(proc->pgdir, proc->sz)) == 0){ */
+  /*   kfree(np->kstack); */
+  /*   np->kstack = 0; */
+  /*   np->state = UNUSED; */
+  /*   return -1; */
+  /* } */
+  np->pgdir = proc->pgdir;
   np->sz = proc->sz;
-  //np->sz = PGSIZE;
   np->parent = proc;
   *np->tf = *proc->tf;
-  //np->context = proc->context;
-
-
-  /* np->tf->edi = 0; */
-  /* np->tf->esi =0; */
-  /* np->tf->ebp=0; */
-  /* np->tf->oesp=0;      // useless & ignored */
-  /* np->tf->ebx=0; */
-  /* np->tf->edx=0; */
-  /* np->tf->ecx=0; */
-  /* np->tf->eax=0; */
-
-  
+  // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
 
-  /////////////////////////
-  
-  /////////////////////////////
+  /////////////////////////////////
 
-  /* uint* stack_int = (uint *) stack; */
-  /* uint userStackPointer = PGROUNDUP(PGSIZE); */
-  /* //np->sz = userStackPointer; */
-  /* stack_int[userStackPointer] = (uint)&arg2; */
-  /* userStackPointer -= 0x4; */
-  /* stack_int[userStackPointer] = (uint)&arg1; */
-  /* userStackPointer -= 0x4; */
-  /* stack_int[userStackPointer] = 0xffffffff; */
-  /* np->tf->ebp = userStackPointer; */
-  /* ///////////////////////////////// */
-  /* cprintf("-----------------------\n"); */
-  /* cprintf("TF EIP: %x\n",np->tf->eip); */
-  /* cprintf("PARENT TF EIP: %x\n",proc->tf->eip); */
-  /* cprintf("-----------------------\n"); */
+  for(int i = 0; i < NOFILE; i++)
+    if(proc->ofile[i])
+      np->ofile[i] = filedup(proc->ofile[i]);
+  np->cwd = idup(proc->cwd);
 
-  /* np->tf->esp = userStackPointer; */
-  /* np->tf->eip = (uint)fnc; */
+  /////////////////////////////////
+
+  uint* stack_int = (uint *) stack;
+  uint userStackPointer = PGSIZE;
+  stack_int[userStackPointer] = (uint)arg2;
+  userStackPointer -= 0x1;
+  stack_int[userStackPointer] = (uint)arg1;
+  userStackPointer -= 0x1;
+  stack_int[userStackPointer] = 0xffffffff;
+  userStackPointer -=0x1;
+  stack_int[userStackPointer] = np->tf->ebp;
   
-  /////////////////////////////////////
+  np->tf->ebp =(uint) &stack_int[userStackPointer];
+  cprintf("EBP+0x8 = %d\n",np->tf->ebp+0xc);
+  cprintf("Address of stack_int[PGSIZE]: %d, value stored at stack_int[PGSIZE]: %x\n",np->tf->ebp,*(uint *)(np->tf->ebp+0x8));
+  for(int i = PGSIZE;i>PGSIZE - 0xf;i--){
+    cprintf("%d: %x\n",&stack_int[i],stack_int[i]);
+  }
+  np->tf->esp = (uint)&stack_int[userStackPointer];
+  np->tf->eip = (uint)fnc;
+  //cprintf("%x\n",(*(&stack_int+userStackPointer)));
+
+
   pid = np->pid;
-  cprintf("CLONE PID: %d\n",pid);
-  cprintf("TF EIP: %x\n",np->tf->eip);
-  cprintf("CONTEXT EIP %x\n",np->context->eip);
-  cprintf("PARENT TF EIP: %x\n",proc->tf->eip);
-  cprintf("PARENT CONTEXT EIP %x\n",proc->context->eip);
   np->state = RUNNABLE;
-  //switchuvm(np);
+  safestrcpy(np->name, proc->name, sizeof(proc->name));
   return pid;
-
 }
