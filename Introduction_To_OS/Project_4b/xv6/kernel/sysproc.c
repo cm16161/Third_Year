@@ -104,6 +104,5 @@ sys_join(void)
 {
   void **stack;
   argptr(0, (void *)&stack, sizeof(*stack));
-  cprintf("address of stack: %d\n",stack);
-  return 0;
+  return join(stack);
 }

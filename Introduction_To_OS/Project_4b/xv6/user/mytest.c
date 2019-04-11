@@ -21,8 +21,8 @@ main(int argc, char *argv[])
     printf(1,"something else....\n");
     //sleep(100);
   }
-  printf(1,"address of stack user %d\n",&stack);
   join(&stack);
-  wait();
+  free(stack);
+  //wait();
   exit();
 }
