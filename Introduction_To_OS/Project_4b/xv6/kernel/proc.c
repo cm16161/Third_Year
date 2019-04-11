@@ -301,12 +301,6 @@ sched(void)
   if(readeflags()&FL_IF)
     panic("sched interruptible");
   intena = cpu->intena;
-  /* if(proc->pid > 3){ */
-  /*   cprintf("PID TO RUN:%d \n",proc->pid); */
-  /*   cprintf("PID CONTEXT EIP:%x\n",proc->context->eip); */
-  /*   cprintf("PID TF EIP:%x\n",proc->tf->eip); */
-  /* } */
-
   swtch(&proc->context, cpu->scheduler);
   cpu->intena = intena;
 }
@@ -471,13 +465,16 @@ int clone(void (*fnc) (void*, void *), void *arg1, void *arg2, void *stack){
   /*   np->state = UNUSED; */
   /*   return -1; */
   /* } */
-  np->pgdir = proc->pgdir;
+  //np->pgdir = proc->pgdir;
   np->sz = proc->sz;
   np->parent = proc;
   *np->tf = *proc->tf;
+  np->pgdir = proc->pgdir;
+  //*np->pgdir = *proc->pgdir;
+
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
-
+  
   /////////////////////////////////
 
   for(int i = 0; i < NOFILE; i++)
@@ -494,19 +491,14 @@ int clone(void (*fnc) (void*, void *), void *arg1, void *arg2, void *stack){
   stack_int[userStackPointer] = (uint)arg1;
   userStackPointer -= 0x1;
   stack_int[userStackPointer] = 0xffffffff;
-  //userStackPointer -=0x1;
   stack_int[userStackPointer] = np->tf->ebp;
-  
+
   np->tf->ebp = stack_int[userStackPointer];
-  /* cprintf("EBP+0x8 = %d\n",np->tf->ebp+0xc); */
-  cprintf("Address of stack_int[PGSIZE]: %d, value stored at stack_int[PGSIZE]: %x\n",np->tf->ebp,*(uint *)(np->tf->ebp+0x8));
   for(int i = PGSIZE;i>PGSIZE - 0xf;i--){
     cprintf("%d: %x\n",&stack_int[i],stack_int[i]);
   }
   np->tf->esp = (uint)&stack_int[userStackPointer];
   np->tf->eip = (uint)fnc;
-  //cprintf("%x\n",(*(&stack_int+userStackPointer)));
-
 
   pid = np->pid;
   np->state = RUNNABLE;
