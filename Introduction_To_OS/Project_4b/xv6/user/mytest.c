@@ -5,6 +5,7 @@
 
 void a(void *b, void *c){
   printf(1,"STUPID FUNCTION a() B:%s, C:%s\n",(char *)b, (char *)c);
+
   exit();
 }
 

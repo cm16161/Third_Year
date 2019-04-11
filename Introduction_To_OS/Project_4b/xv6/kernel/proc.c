@@ -457,8 +457,7 @@ int clone(void (*fnc) (void*, void *), void *arg1, void *arg2, void *stack){
   np->pgdir = proc->pgdir;
 
   // Clear %eax so that fork returns 0 in the child.
-  np->tf->eax = 0;
-
+  np->tf->eax =0;
   /////////////////////////////////
 
   for(int i = 0; i < NOFILE; i++)
@@ -469,22 +468,21 @@ int clone(void (*fnc) (void*, void *), void *arg1, void *arg2, void *stack){
   /////////////////////////////////
 
   uint* stack_int = (uint *) stack;
-  uint userStackPointer = 1000;
+  uint userStackPointer = 1000+0x17;
   stack_int[userStackPointer] = (uint)arg2;
   userStackPointer -= 0x1;
   stack_int[userStackPointer] = (uint)arg1;
   userStackPointer -= 0x1;
-  stack_int[userStackPointer] = 0xffffffff;
-  np->tf->esp = (uint)&stack_int[userStackPointer];
-  userStackPointer -= 0x1;
-  stack_int[userStackPointer] = np->tf->ebp;
+  stack_int[userStackPointer] =(uint) 0xffffffff;
 
-  np->tf->ebp = stack_int[userStackPointer];
+  np->tf->ebp = (uint )&stack_int[userStackPointer];
+  np->tf->esp = (uint )&stack_int[userStackPointer];
   np->tf->eip = (uint)fnc;
   np->clone_stack_location = stack_int;
   pid = np->pid;
   np->state = RUNNABLE;
   safestrcpy(np->name, proc->name, sizeof(proc->name));
+
   return pid;
 }
 
