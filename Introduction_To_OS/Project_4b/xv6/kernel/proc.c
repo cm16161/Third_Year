@@ -485,7 +485,7 @@ int clone(void (*fnc) (void*, void *), void *arg1, void *arg2, void *stack){
   /////////////////////////////////
 
   uint* stack_int = (uint *) stack;
-  uint userStackPointer = PGSIZE;
+  uint userStackPointer = 1000;
   stack_int[userStackPointer] = (uint)arg2;
   userStackPointer -= 0x1;
   stack_int[userStackPointer] = (uint)arg1;
@@ -494,9 +494,9 @@ int clone(void (*fnc) (void*, void *), void *arg1, void *arg2, void *stack){
   stack_int[userStackPointer] = np->tf->ebp;
 
   np->tf->ebp = stack_int[userStackPointer];
-  for(int i = PGSIZE;i>PGSIZE - 0xf;i--){
-    cprintf("%d: %x\n",&stack_int[i],stack_int[i]);
-  }
+  /* for(int i = PGSIZE;i>PGSIZE - 0xf;i--){ */
+  /*   cprintf("%d: %x\n",&stack_int[i],stack_int[i]); */
+  /* } */
   np->tf->esp = (uint)&stack_int[userStackPointer];
   np->tf->eip = (uint)fnc;
 

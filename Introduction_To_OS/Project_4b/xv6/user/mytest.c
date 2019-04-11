@@ -1,11 +1,9 @@
 #include "types.h"
 #include "stat.h"
 #include "user.h"
-#define PGSIZE 4096
+#define PGSIZE 1000
 
 void a(void *b, void *c){
-  printf(1,"test\n");
-  printf(1,"address of b:%d, c:%d\n",(int) &b, (int)&c);
   printf(1,"STUPID FUNCTION a() B:%s, C:%s\n",(char *)b, (char *)c);
   exit();
 }
@@ -15,7 +13,7 @@ main(int argc, char *argv[])
 {
   void *stack = malloc(2*sizeof(uint)*PGSIZE);
 
-  int pid = clone(&a, (void *)"giggs", (void *)"seventy two", stack);
+  int pid = clone(&a, (void *)"hello", (void *)"world", stack);
   if(pid == 0){
     printf(1,"something....\n");
   }
@@ -23,6 +21,8 @@ main(int argc, char *argv[])
     printf(1,"something else....\n");
     //sleep(100);
   }
+  printf(1,"address of stack user %d\n",&stack);
+  join(&stack);
   wait();
   exit();
 }

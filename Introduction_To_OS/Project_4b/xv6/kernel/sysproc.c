@@ -98,3 +98,12 @@ sys_clone(void)
   argptr(3, (void *)&stack, sizeof(*stack));
   return clone(fcn, arg1, arg2, stack);
 }
+
+int
+sys_join(void)
+{
+  void **stack;
+  argptr(0, (void *)&stack, sizeof(*stack));
+  cprintf("address of stack: %d\n",stack);
+  return 0;
+}
