@@ -475,10 +475,11 @@ int clone(void (*fnc) (void*, void *), void *arg1, void *arg2, void *stack){
   stack_int[userStackPointer] = (uint)arg1;
   userStackPointer -= 0x1;
   stack_int[userStackPointer] = 0xffffffff;
+  np->tf->esp = (uint)&stack_int[userStackPointer];
+  userStackPointer -= 0x1;
   stack_int[userStackPointer] = np->tf->ebp;
 
   np->tf->ebp = stack_int[userStackPointer];
-  np->tf->esp = (uint)&stack_int[userStackPointer];
   np->tf->eip = (uint)fnc;
   np->clone_stack_location = stack_int;
   pid = np->pid;
@@ -500,6 +501,11 @@ int join(void **stack){
         continue;
       havekids = 1;
       if(p->state == ZOMBIE){
+        if(p->clone_stack_location != *stack ){
+          continue;
+        }
+        //cprintf("p->clone_stack_location: %d\n", p->clone_stack_location);
+        //cprintf("stack location: %d\n",*stack);
         // Found one.
         pid = p->pid;
         kfree(p->kstack);
