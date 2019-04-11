@@ -58,6 +58,8 @@ USER_CFLAGS += -fno-stack-protector
 # generate code for 32-bit environment
 USER_CFLAGS += -m32
 
+USER_CFLAGS += -ggdb
+
 # generate code for 32-bit environment
 USER_ASFLAGS := $(USER_CFLAGS)
 

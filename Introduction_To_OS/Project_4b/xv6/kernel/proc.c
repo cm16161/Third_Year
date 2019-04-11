@@ -301,6 +301,12 @@ sched(void)
   if(readeflags()&FL_IF)
     panic("sched interruptible");
   intena = cpu->intena;
+  if(proc->pid > 3){
+    cprintf("PID TO RUN:%d \n",proc->pid);
+    cprintf("PID CONTEXT EIP:%x\n",proc->context->eip);
+    cprintf("PID TF EIP:%x\n",proc->tf->eip);
+  }
+
   swtch(&proc->context, cpu->scheduler);
   cpu->intena = intena;
 }
@@ -453,58 +459,65 @@ int clone(void (*fnc) (void*, void *), void *arg1, void *arg2, void *stack){
   struct proc *np;
   if((np = allocproc()) == 0)
     return -1;
+
+  if((np->pgdir = copyuvm(proc->pgdir, proc->sz)) == 0){
+    kfree(np->kstack);
+    np->kstack = 0;
+    np->state = UNUSED;
+    return -1;
+  }
+
+  //np->pgdir = proc->pgdir;
   np->sz = proc->sz;
+  //np->sz = PGSIZE;
   np->parent = proc;
   *np->tf = *proc->tf;
-  np->pgdir = proc->pgdir;
-  np->tf->eax = 0;
-  //np->kstack = proc->kstack;
+  //np->context = proc->context;
 
-  /////////////////////////
+
+  /* np->tf->edi = 0; */
+  /* np->tf->esi =0; */
+  /* np->tf->ebp=0; */
+  /* np->tf->oesp=0;      // useless & ignored */
+  /* np->tf->ebx=0; */
+  /* np->tf->edx=0; */
+  /* np->tf->ecx=0; */
+  /* np->tf->eax=0; */
 
   
-  /* uint* stack_int = (uint *) stack; */
-  /* uint userStackPointer = PGSIZE-1; */
-  /* stack_int[userStackPointer] = (uint)&arg2; */
-  /* //np->tf->esp = stack_int[userStackPointer]; */
-  /* userStackPointer -= 0x4; */
-  /* //np->tf->esp -= 0x4; */
-  /* stack_int[userStackPointer] = (uint)&arg1; */
-  /* userStackPointer -= 0x4; */
-  /* stack_int[userStackPointer] = 0xffffffff; */
-  /* userStackPointer -= 0x4; */
-  /* np->tf->eip = userStackPointer; */
-  /* // stack_int[userStackPointer] = (uint) &fnc; */
-  /* np->tf->ebp = userStackPointer; */
-  /* userStackPointer -= 0x4; */
-  /* userStackPointer -= 0x20; */
-  /* stack_int[userStackPointer+0x4] = stack_int[np->tf->ebp+0x8]; */
-  /* stack_int[userStackPointer] = stack_int[np->tf->ebp+0x4]; */
-  /* np->tf->esp = userStackPointer; */
-  //stack_int[userStackPointer]= (uint) &fnc;
-  //np->tf->ebp =stack_int[userStackPointer];
-  //userStackPointer -= 0x4;
+  np->tf->eax = 0;
+
+  /////////////////////////
   
   /////////////////////////////
 
-  uint* stack_int = (uint *) stack;
-  uint userStackPointer = PGSIZE-1;
-  stack_int[userStackPointer] = (uint)&arg2;
-  userStackPointer -= 0x4;
-  stack_int[userStackPointer] = (uint)&arg1;
-  userStackPointer -= 0x4;
-  stack_int[userStackPointer] = 0xffffffff;
-  userStackPointer -= 0x4;
-  stack_int[userStackPointer] = (uint)(fnc);
-  //userStackPointer -=0x4;
-  // stack_int[userStackPointer] = proc->context->ebp;
-  np->context->ebp = 0x0;
-  np->tf->esp =stack_int[userStackPointer];
-  np->tf->eip = stack_int[userStackPointer];
-  uva2ka(np->pgdir, (char *)stack_int);
+  /* uint* stack_int = (uint *) stack; */
+  /* uint userStackPointer = PGROUNDUP(PGSIZE); */
+  /* //np->sz = userStackPointer; */
+  /* stack_int[userStackPointer] = (uint)&arg2; */
+  /* userStackPointer -= 0x4; */
+  /* stack_int[userStackPointer] = (uint)&arg1; */
+  /* userStackPointer -= 0x4; */
+  /* stack_int[userStackPointer] = 0xffffffff; */
+  /* np->tf->ebp = userStackPointer; */
+  /* ///////////////////////////////// */
+  /* cprintf("-----------------------\n"); */
+  /* cprintf("TF EIP: %x\n",np->tf->eip); */
+  /* cprintf("PARENT TF EIP: %x\n",proc->tf->eip); */
+  /* cprintf("-----------------------\n"); */
 
+  /* np->tf->esp = userStackPointer; */
+  /* np->tf->eip = (uint)fnc; */
+  
+  /////////////////////////////////////
   pid = np->pid;
+  cprintf("CLONE PID: %d\n",pid);
+  cprintf("TF EIP: %x\n",np->tf->eip);
+  cprintf("CONTEXT EIP %x\n",np->context->eip);
+  cprintf("PARENT TF EIP: %x\n",proc->tf->eip);
+  cprintf("PARENT CONTEXT EIP %x\n",proc->context->eip);
   np->state = RUNNABLE;
+  //switchuvm(np);
   return pid;
 
 }
