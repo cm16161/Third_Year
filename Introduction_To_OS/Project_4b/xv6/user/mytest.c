@@ -21,7 +21,7 @@ main(int argc, char *argv[])
   }
   else{
     printf(1,"something else....\n");
-    sleep(200);
+    //sleep(100);
   }
   wait();
   exit();
