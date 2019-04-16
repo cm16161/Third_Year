@@ -6,6 +6,6 @@
  d) GPU's have a larger focus on Bandwidth rather than CPU's which focus on Latency, GPU's have smaller caches and NVIDIA doesn't build CPU's. 
  
 2a) 1.5 = 1/(1-f)+f/2; f = 0.67
- b) 1/((1-2/3)+2/3/6) + 1/((1-1/6)+1/6/3); S = 3.375
- c) It's not possible, 98% of the speedup is 3.3x, the limit from the parallisable part is ~3x speedup.
+ b) 1/-2/3-1/6+(2/3/6)+(1/6/3); S = 3
+ c) 98-6=92 additional processors
  
