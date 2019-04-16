@@ -1,0 +1,11 @@
+1a) An application that doesn't have many pipeline hazards can be restructured so that it would benefit from multiple processors despite not being a concurrent application.
+
+ b) As the number of processesors increases, there is more demand for the shared L3 cache which would likely result in more cache misses.
+ 
+ c) GPU's use multi-threading whereas vectors don't use multi-threading
+ d) GPU's have a larger focus on Bandwidth rather than CPU's which focus on Latency, GPU's have smaller caches and NVIDIA doesn't build CPU's. 
+ 
+2a) 1.5 = 1/(1-f)+f/2; f = 0.67
+ b) 1/((1-2/3)+2/3/6) + 1/((1-1/6)+1/6/3); S = 3.375
+ c) It's not possible, 98% of the speedup is 3.3x, the limit from the parallisable part is ~3x speedup.
+ 
