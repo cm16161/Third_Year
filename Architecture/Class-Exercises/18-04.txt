@@ -1,0 +1,5 @@
+1a) Multithreading is instruction level parallelism MISD whereas multicore uses program parallelism, MIMD
+ b) As long as the same registers and memory locations aren't being accessed at the same time then SMT would improve resource utilisation
+
+2a) Minimum number would  be 4 functional units in an ideal case.
+2b) Minimum number would  be 4 functional units since in this situation, all of the threads have the same hazards for each instruction, and so all of the instructions fetched would line up in the execute stage requiring 4 functional units so that there are no stalls.
