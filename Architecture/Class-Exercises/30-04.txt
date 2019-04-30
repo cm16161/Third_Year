@@ -1,0 +1,25 @@
+1)
+
+Numbers:
+
+0.375 = 0 001 10000000 | 1.75 =  0 011 11000000
+
+Input to Adders:
+
+01100000 11000000
+
+Result of Adders:
+
+00100000, carry out 1, shift 1 right
+
+increase exponent by 1
+
+0 100 00010000
+
+
+
+2)
+
+i  ) The significand for 19.25 is 001101, and 0.140625 is 001000 so we need 6 bits
+ii ) Exponent for 19.25 is 4, and exponent for 0.140625 is -3 so we need -3 to 4 which is 8 values and so we need 3 bits.
+iii) Bias is 3
