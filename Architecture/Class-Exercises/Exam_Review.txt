@@ -1,0 +1,21 @@
+| Time | Cache Access  | State Of X |    |    | State Of Y |    |    |
+|------+---------------+------------+----+----+------------+----+----|
+|      |               | C0         | C1 | C2 | C0         | C1 | C2 |
+|    0 | Initial State | M          | I  | I  | S          | S  | I  |
+|    1 | T1 Load X     | S          | S  | I  | S          | S  | I  |
+|    2 | T0 Evict Y    | S          | S  | I  | I          | S  | I  |
+|    3 | T1 store X    | I          | M  | I  | I          | S  | I  |
+|    4 | T1 Load X     | I          | M  | I  | I          | S  | I  |
+|    5 | T2 Load Y     | I          | M  | I  | I          | S  | S  |
+
+
+TLB Access= 1
+Data Cache Access =2 
+Main Memory Access = 25
+
+TLB Miss = 1
+Cache Miss = 2
+
+TLB Miss Rate = 0.01%
+
+1 + 0.01%*25*2 + 2+ 3%*25
